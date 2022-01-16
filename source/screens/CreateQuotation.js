@@ -1,0 +1,219 @@
+import React from 'react';
+import { View, Text, Dimensions, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign'
+import {Button} from 'react-native-paper'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Modal from 'react-native-modal'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+
+export default function CreateQuotation({ navigation }) {
+    const [value, setValue] = React.useState(4);
+    const [modal, setModal] = React.useState(true)
+    return (
+        <View style={{ flex: 1, paddingHorizontal: 10, backgroundColor: '#ffffff' }}>
+            <ScrollView style={{}} showsVerticalScrollIndicator={false}>
+                <View style={{
+                    flexDirection: 'row',
+                    paddingVertical: 0,
+                    paddingHorizontal: 5,
+                    elevation: 5,
+                    borderRadius: 10,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#ffffff',
+                    marginVertical: 10,
+                    marginHorizontal: 4
+                }}>
+                    <Icon size={20} name="search1" color='#4E53C8' />
+                    <TextInput
+                        style={{ width: '90%', color: '#000000', fontSize: 20, paddingLeft: 20 }}
+                        placeholder={'Search City'}
+                        maxLength={50}
+                        placeholderTextColor={'#D8D8D8'}
+                    />
+                </View>
+                <View style={{ backgroundColor: '#ffffff', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 20, elevation: 5, margin: 5 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, paddingVertical: 10, }}>
+                        <View>
+                            <Text style={{ color: '#4E53C8', fontSize: 15, }}>Part 1</Text>
+                            <Text style={{ color: '#707070', fontSize: 15, }}>Lorem ipsum dolor sit amet</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            <Text style={{ color: '#4E53C8', fontSize: 25, fontWeight: '600' }}>₹200</Text>
+                            <TouchableOpacity onPress={() => { setModal(true) }} style={{ backgroundColor: '#4E53C8', padding: 2.5, borderRadius: 100, marginLeft: 10 }}>
+                                <Icon name="plus" size={20} color={'#ffffff'} />
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, paddingVertical: 10, }}>
+                        <View>
+                            <Text style={{ color: '#4E53C8', fontSize: 15, }}>Part 2</Text>
+                            <Text style={{ color: '#707070', fontSize: 15, }}>Lorem ipsum dolor sit amet</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            <Text style={{ color: '#4E53C8', fontSize: 25, fontWeight: '600' }}>₹500</Text>
+                            <TouchableOpacity onPress={() => { setModal(true) }} style={{ backgroundColor: '#4E53C8', padding: 2.5, borderRadius: 100, marginLeft: 10 }}>
+                                <Icon name="plus" size={20} color={'#ffffff'} />
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, paddingVertical: 10, }}>
+                        <View>
+                            <Text style={{ color: '#4E53C8', fontSize: 15, }}>Part 3</Text>
+                            <Text style={{ color: '#707070', fontSize: 15, }}>Lorem ipsum dolor sit amet</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            <Text style={{ color: '#4E53C8', fontSize: 25, fontWeight: '600' }}>₹2200</Text>
+                            <TouchableOpacity onPress={() => { setModal(true) }} style={{ backgroundColor: '#4E53C8', padding: 2.5, borderRadius: 100, marginLeft: 10 }}>
+                                <Icon name="plus" size={20} color={'#ffffff'} />
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, paddingVertical: 10, }}>
+                        <View>
+                            <Text style={{ color: '#4E53C8', fontSize: 15, }}>Part 4</Text>
+                            <Text style={{ color: '#707070', fontSize: 15, }}>Lorem ipsum dolor sit amet</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                            <Text style={{ color: '#4E53C8', fontSize: 25, fontWeight: '600' }}>₹2000</Text>
+                            <TouchableOpacity onPress={() => { setModal(true) }} style={{ backgroundColor: '#4E53C8', padding: 2.5, borderRadius: 100, marginLeft: 10 }}>
+                                <Icon name="plus" size={20} color={'#ffffff'} />
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', paddingVertical: 15 }}>
+                        <Text style={{ color: '#707070', fontSize: 18, }}>Not in the list?</Text>
+                        <TouchableOpacity style={{ borderColor: '#05194E', borderWidth: 1, paddingVertical: 2.5, paddingHorizontal: 20, borderRadius: 5, }}>
+                            <Text style={{ color: '#05194E', fontSize: 15, }}>Help</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={{ backgroundColor: '#ffffff', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 20, elevation: 5, margin: 5 }}>
+
+                    <Text style={{ color: '#000000', fontSize: 14, textAlign: 'center', fontWeight: '600' }}>Quotation</Text>
+                    <View style={{ height: 1, backgroundColor: '#EAE2E2', marginTop: 10, marginBottom: 10 }} />
+                    
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', }}>
+                        <View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14 }}>Base Payment</Text>
+                            </View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14 }}>Extra Amount</Text>
+                            </View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14 }}>Part 1</Text>
+                            </View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14 }}>Part 2</Text>
+                            </View>
+                        </View>
+                
+                        <View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹500</Text>
+                            </View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹300</Text>
+                            </View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹200</Text>
+                            </View>
+                            <View style={{ marginTop: 10 }}>
+                                <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹400</Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', }}>
+                        <View style={{ marginVertical: 5 }}>
+                            <Text style={{ color: '#000000', fontSize: 14 }}>Parts Total Amount</Text>
+                        </View>
+                        <View style={{ marginVertical: 5 }}>
+                            <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹1400</Text>
+                        </View>
+                    </View>
+
+                </View>
+            </ScrollView>
+
+
+            <Modal
+                isVisible={modal}
+                hasBackdrop={true}
+                backdropOpacity={0.3}
+                backdropColor={"#000000"}
+                animationType="fadeIn"
+                swipeDirection={['down', "up", "left", "right"]}
+                onSwipeComplete={() => { setModal(false) }}
+                onBackdropPress={() => { setModal(false) }}
+                style={{ margin: 30, justifyContent: "center", }}>
+                <View style={{ backgroundColor: '#ffffff', paddingHorizontal: 20, paddingVertical: 20, borderRadius: 15, display: 'flex', alignContent: 'center', alignItems: 'center', }}>
+                    <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ color: '#635E5E', textAlign: 'center', fontSize: 16, fontWeight: '500', marginBottom: 10 }}></Text>
+                        <TouchableOpacity onPress={() => { setModal(false) }}>
+                            <Ionicons name="close" size={30} color={'#000000'} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ width: '100%' }}>
+                        <Text style={{ color: '#4E53C8', textAlign: 'left', fontSize: 18 }}>Item Name</Text>
+                        <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: '#000000', textAlign: 'left', fontSize: 18 }}>Price</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#4E53C8', textAlign: 'left', fontSize: 30 }}>₹</Text>
+                                <TextInput style={{ textAlign: 'center', minWidth: 70, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }} />
+                            </View>
+                        </View>
+                        <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: '#000000', textAlign: 'left', fontSize: 18 }}>Unit</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                                
+                                <TouchableOpacity onPress={() => { value > 1 && setValue(value - 1) }} style={{ backgroundColor: '#ffffff', borderRadius: 100, height: 35, width: 35, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                                    <MaterialCommunityIcons name="minus" size={20} color={'#4E53C8'} />
+                                </TouchableOpacity>
+                                
+                                <Text style={{ textAlign: 'center', minWidth: 30, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }}>
+                                    {value}
+                                </Text>
+
+                                <TouchableOpacity onPress={() => { setValue(value + 1) }} style={{ backgroundColor: '#ffffff', borderRadius: 100, height: 35, width: 35, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                                    <MaterialCommunityIcons name="plus" size={20} color={'#4E53C8'} />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginVertical: 30 }}>
+                            <TouchableOpacity onPress={() => { setModal(false) }} style={{ width: '40%', backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
+                                <Text style={{ color: '#05194E', fontSize: 12, fontWeight: '400', textAlign: 'center' }}>CANCEL</Text>
+                            </TouchableOpacity>
+                            <Button onPress={() => { setModal(false) }}
+                                style={{ width: '40%', backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
+                                mode="contained">
+                                <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: '400' }}>ADD</Text>
+                            </Button>
+
+
+                            
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+
+
+            <Button onPress={() => { navigation.navigate('ShareQuotation') }}
+                style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, marginVertical: 30, alignSelf: 'center', width: '100%' }}
+                mode="contained"
+            >
+                <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Share Quotation</Text>
+            </Button>
+        </View>
+    );
+}
