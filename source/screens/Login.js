@@ -1,9 +1,32 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Image, StatusBar, Dimensions, ScrollView } from 'react-native'
+import { View, Text, TextInput, ToastAndroid, Image, StatusBar, Dimensions, ScrollView } from 'react-native'
 import { Button } from 'react-native-paper'
+import { Login } from '../config/apis/AuthApi'
 
 const LoginScreen = ({navigation}) => {
-    const [value, setvalue] = useState('')
+    const [value, setvalue] = useState('9588754120')
+
+    const getOTP =()=>{
+        if(value === '' || value === null || value.length!=10){
+            ToastAndroid.show('Enter a Valid Number!', ToastAndroid.SHORT);
+        }else{
+            Login({
+                phonenumber:value
+            }).then(res=>{
+                console.log(res.data)
+                if(res.status === 200){
+                    ToastAndroid.show('OTP Sent!', ToastAndroid.SHORT);
+                    navigation.replace('OtpVerification', {
+                        num: value
+                    })
+                }
+            }).catch(err=>{
+                ToastAndroid.show(err.response.data.message, ToastAndroid.LONG);
+            })
+           
+        }
+    }
+
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <StatusBar backgroundColor={'#4E53C8'} barStyle={'light-content'} />
@@ -30,11 +53,7 @@ const LoginScreen = ({navigation}) => {
                             />
                         </View>
                     </View>
-                    <Button onPress={() => {
-                        navigation.replace('OtpVerification', {
-                            num: value
-                        })
-                    }}
+                    <Button onPress={getOTP}
                         style={{ marginTop: 20, width: '100%', fontSize: 20, backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
                         mode="contained"
                     ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Request OTP</Text></Button>
