@@ -400,7 +400,7 @@ export default function ExpertBookings({navigation}) {
             </TouchableOpacity>
             <ImageBackground source={require('../assets/images/homeTopBg.png')} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet balence</Text>
+                    <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
                     <TouchableOpacity onPress={() => { navigation.navigate('WalletDetails') }}><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
@@ -413,8 +413,8 @@ export default function ExpertBookings({navigation}) {
                         mode="contained">
                         <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Recharge</Text>
                     </Button>
-                    <TouchableOpacity style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
-                        <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>WITHDRAW</Text>
+                    <TouchableOpacity style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
+                        <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '400' }}>WITHDRAW</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -485,7 +485,7 @@ export default function ExpertBookings({navigation}) {
                         
                         
                         <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15,marginTop: 10 }}>Amount</Text>
-                        <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 30, marginVertical: 10 }}>₹{value * 500 * .18 + (value * 500)}</Text>
+                        <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 40, marginVertical: 10 }}>₹{value * 500 * .18 + (value * 500)}</Text>
 
                         <Button onPress={() => { setModal(false) }}
                             style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '60%', alignSelf: 'center' }}

@@ -14,7 +14,7 @@ export default function WalletDetails() {
     <View style={{ flex: 1, backgroundColor: '#F8F8F8', paddingHorizontal: 10 }}>
       <ImageBackground source={require('../assets/images/homeTopBg.png')} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15, marginTop: 10 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet balence</Text>
+          <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
           <TouchableOpacity><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
@@ -27,9 +27,9 @@ export default function WalletDetails() {
             mode="contained">
             <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Recharge</Text>
           </Button>
-          <TouchableOpacity style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
-            <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>WITHDRAW</Text>
-          </TouchableOpacity>
+          <TouchableOpacity style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
+                        <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '400' }}>WITHDRAW</Text>
+                    </TouchableOpacity>
         </View>
       </ImageBackground>
       <Text style={{ fontSize: 18, color: '#000000', marginVertical: 10 }}>20-27 December 2021</Text>
@@ -40,8 +40,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdg.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>Amount added to wallet</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>Amount added to wallet</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#48B162', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -51,8 +51,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdr.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>HV Pay (BH2908769)</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>HV Pay (BH2908769)</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#F82D2D', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -64,8 +64,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdg.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>Amount added to wallet</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>Amount added to wallet</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#48B162', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -75,8 +75,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdr.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>HV Pay (BH2908769)</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>HV Pay (BH2908769)</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#F82D2D', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -88,8 +88,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdg.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>Amount added to wallet</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>Amount added to wallet</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#48B162', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -99,8 +99,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdr.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>HV Pay (BH2908769)</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>HV Pay (BH2908769)</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#F82D2D', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -112,8 +112,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdg.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>Amount added to wallet</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>Amount added to wallet</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#48B162', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -123,8 +123,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdr.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>HV Pay (BH2908769)</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>HV Pay (BH2908769)</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#F82D2D', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -136,8 +136,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdg.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>Amount added to wallet</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>Amount added to wallet</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#48B162', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -147,8 +147,8 @@ export default function WalletDetails() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
             <Image source={require('../assets/images/wdr.png')} />
             <View style={{ flex: 1, paddingLeft: 10 }}>
-              <Text style={{ color: '#000000', fontSize: 18 }}>HV Pay (BH2908769)</Text>
-              <Text style={{ color: '#707070', fontSize: 15 }}>12 Sep 2021</Text>
+              <Text style={{ color: '#000000', fontSize: 15 }}>HV Pay (BH2908769)</Text>
+              <Text style={{ color: '#707070', fontSize: 13 }}>12 Sep 2021</Text>
             </View>
             <View>
               <Text style={{ color: '#F82D2D', fontSize: 25, fontWeight: '600   ' }}>+200</Text>
@@ -210,7 +210,7 @@ export default function WalletDetails() {
                         
                         
             <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15, marginTop: 10 }}>Amount</Text>
-            <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 30, marginVertical: 10 }}>₹{value * 500 * .18 + (value * 500)}</Text>
+            <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 40, marginVertical: 10 }}>₹{value * 500 * .18 + (value * 500)}</Text>
 
             <Button onPress={() => { setModal(false) }}
               style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '60%', alignSelf: 'center' }}

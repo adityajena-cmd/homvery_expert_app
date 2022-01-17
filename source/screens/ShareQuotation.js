@@ -134,7 +134,7 @@ export default function ShareQuotation({navigation}) {
                 style={{ margin: 30, justifyContent: "center", }}>
                 <View style={{ backgroundColor: '#ffffff', paddingHorizontal: 20, paddingVertical: 40, borderRadius: 15, display: 'flex', alignContent: 'center', alignItems: 'center', }}>
                     <Image source={require('../assets/images/quot3.png')} style={{ width: Dimensions.get('screen').width / 2, height: Dimensions.get('screen').width / 2 }} />
-                    <Text style={{ color: '#635E5E', textAlign: 'center', fontSize: 20, marginVertical: 10, fontWeight: '600', width: '50%' }}>Quotation has been shared</Text>
+                    <Text style={{ color: '#635E5E', textAlign: 'center', fontSize: 18, marginVertical: 10, fontWeight: '600', width: '80%' }}>Quotation has been accepted by the customer</Text>
                     <Button
                         onPress={() => { setModal(false) }}
                         style={{ width: '75%', marginVertical: 20, fontSize: 20, backgroundColor: '#05194E', borderRadius: 10, paddingVertical: 0 }}

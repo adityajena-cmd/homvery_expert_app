@@ -27,7 +27,7 @@ export default function CreateQuotation({ navigation }) {
                     <Icon size={20} name="search1" color='#4E53C8' />
                     <TextInput
                         style={{ width: '90%', color: '#000000', fontSize: 20, paddingLeft: 20 }}
-                        placeholder={'Search City'}
+                        placeholder={'Search Item'}
                         maxLength={50}
                         placeholderTextColor={'#D8D8D8'}
                     />
@@ -190,11 +190,11 @@ export default function CreateQuotation({ navigation }) {
                         </View>
                         <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginVertical: 30 }}>
-                            <TouchableOpacity onPress={() => { setModal(false) }} style={{ width: '40%', backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
+                            <TouchableOpacity onPress={() => { setModal(false) }} style={{ width: '45%', backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
                                 <Text style={{ color: '#05194E', fontSize: 12, fontWeight: '400', textAlign: 'center' }}>CANCEL</Text>
                             </TouchableOpacity>
                             <Button onPress={() => { setModal(false) }}
-                                style={{ width: '40%', backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
+                                style={{ width: '45%', backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
                                 mode="contained">
                                 <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: '400' }}>ADD</Text>
                             </Button>

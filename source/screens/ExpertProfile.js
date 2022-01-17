@@ -60,7 +60,7 @@ export default function ExpertProfile({navigation}) {
           </View>
 
           <View style={{ marginVertical: 30 }}>
-            <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 20, textAlign: 'center', marginVertical: 10 }}>Congratulation!</Text>
+            <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 20, textAlign: 'center', marginVertical: 10 }}>Congratulations!</Text>
             <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Your profile has been approved.</Text>
 
             <Button onPress={() => { }}
@@ -73,9 +73,9 @@ export default function ExpertProfile({navigation}) {
 
 
 
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center',}}>
-          <Image source={require('../assets/images/M2.png')} style={{width : width/3.5, height: width/3.5}}/>
-          <View style={{marginLeft: 20}}>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center',}}>
+          <Image source={require('../assets/images/M2.png')} style={{width : width/4, height: width/4}}/>
+          <View style={{marginLeft: 30}}>
             <Text style={{color: '#4E53C8', fontWeight: '600', fontSize: 20}}>Paresh Kumar</Text>
             <Text style={{color: '#707070', fontWeight: '400', fontSize: 15}}>pk@gmail.com</Text>
             <Text style={{color: '#707070', fontWeight: '500', fontSize: 15}}>9586856986</Text>

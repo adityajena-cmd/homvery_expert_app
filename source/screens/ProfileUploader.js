@@ -10,7 +10,7 @@ export default function ProfileUploader({navigation}) {
    
                 <Image source={require('../assets/images/pu.png')}
                     resizeMode='contain'
-                    style={{ height: 150, width: 250, marginVertical: 40 }} />
+                    style={{ height: 150, width: 250, marginVertical: 40, alignSelf: 'center' }} />
                 <Text style={{ color: '#05194E', fontSize: 18, textAlign: 'center', fontWeight: '500', marginVertical: 50 }}>
                     Please upload below mentioned documents to register as technician
                 </Text>

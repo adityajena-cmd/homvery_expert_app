@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { getFocusedRouteNameFromRoute, useNavigation,useRoute } from '@react-navigation/native';
@@ -49,8 +49,10 @@ function Bottomtabs() {
       <BottomTab.Screen
         options={{
           tabBarLabel: 'Payout',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="bitcoin" color={color} size={24} />
+            tabBarIcon: ({ color, focused }) => (
+              focused ? <Image source={require('../assets/images/payoutActive.png')} resizeMode='cover'/>
+                : <Image source={require('../assets/images/payout.png')} resizeMode='cover'/>
+            // <MaterialCommunityIcons name="bitcoin" color={color} size={24} />
           ),
         }}
         name="Payout"
@@ -58,8 +60,10 @@ function Bottomtabs() {
       <BottomTab.Screen
         options={{
           tabBarLabel: 'Ranking',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="card-account-details-star-outline" color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+              focused ? <Image source={require('../assets/images/rankingActive.png')} resizeMode='cover'/>
+                : <Image source={require('../assets/images/ranking.png')} resizeMode='cover'/>
+            // <MaterialCommunityIcons name="bitcoin" color={color} size={24} />
           ),
         }}
         name="Ranking"
