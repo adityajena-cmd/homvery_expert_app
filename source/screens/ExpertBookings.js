@@ -1,411 +1,337 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Dimensions, ScrollView, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/Ionicons'
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modal from 'react-native-modal'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { GetAllBookings , GetWalletDetails } from '../config/apis/BookingApis';
+import Spinner from 'react-native-loading-spinner-overlay';
+import OngoingBooking from './OngoingBooking';
+import moment from 'moment';
+import { add } from 'react-native-reanimated';
+
+const getFullAddress = (addr) => {
+    let address = ''
+    if (addr === null || addr === undefined) {
+        address = "NA"
+    } else {
+        address = addr.flat + ", " + addr.street + ", " + addr.addressline1 + "\n" + addr.landmark + ", " + addr.pincode + ", " + addr.city;
+    }
+
+    return address
+}
 
 
 const Tab = createMaterialTopTabNavigator();
 
-function Screen1({navigation}) {
+function Screen1({ navigation, data }) {
+
+
     return (
         <View style={{ flex: 1, backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <TouchableOpacity onPress={()=>{navigation.navigate('BookingDetails')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
 
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{navigation.navigate('BookingDetails')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
+                {
+                    data.length > 0 ?
+                        (
+                            data.map(item => {
+                                let date = new Date(item.bookingid?.fromtime)
+                                console.log(moment(date).format('hh:mm a'))
+                                // console.log(moment.unix(item.bookingid?.fromtime).format("MM/DD/YYYY"))
+                                return (
+                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails') }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                                            <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
+                                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> {item.bookingid?.bookingId}</Text>
+                                        </View>
+                                        <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
+                                        <View style={{ paddingVertical: 10 }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
+                                                        <View style={{ marginLeft: 10 }}>
+                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>{moment(date).format('MM-DD-YYYY')}</Text>
+                                                            <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('hh:mm a') + " - " + moment(new Date(item.bookingid?.totime)).format('hh:mm a')}</Text>
+                                                        </View>
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
+                                                        <View style={{ marginLeft: 10 }}>
+                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                        </View>
+                                                    </View>
+                                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
 
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-                 <TouchableOpacity onPress={()=>{navigation.navigate('BookingDetails')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                )
+                            })
 
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{navigation.navigate('BookingDetails')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
+                        ) :
+                        <></>
+                }
 
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+
 
             </ScrollView>
         </View>
     );
 }
-function Screen2({navigation}) {
+function Screen2({ navigation, data }) {
     return (
         <View style={{ flex: 1, backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <TouchableOpacity onPress={()=>{navigation.navigate('OngoingBooking')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
 
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{navigation.navigate('OngoingBooking')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
+                {
+                    data.length > 0 ?
+                        (
+                            data.map(item => {
+                                let date = new Date(item.bookingid?.fromtime)
+                                console.log(moment(date).format('hh:mm a'))
+                                return (
+                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails') }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                                            <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
+                                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> {item.bookingid?.bookingId}</Text>
+                                        </View>
+                                        <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
+                                        <View style={{ paddingVertical: 10 }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
+                                                        <View style={{ marginLeft: 10 }}>
+                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>{moment(date).format('MM-DD-YYYY')}</Text>
+                                                            <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('hh:mm a') + " - " + moment(new Date(item.bookingid?.totime)).format('hh:mm a')}</Text>
+                                                        </View>
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
+                                                        <View style={{ marginLeft: 10 }}>
+                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                        </View>
+                                                    </View>
+                                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
 
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-                 <TouchableOpacity onPress={()=>{navigation.navigate('OngoingBooking')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                )
+                            })
 
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{navigation.navigate('OngoingBooking')}} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                        <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                    </View>
-                    <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10 }} />
-                    <View style={{ paddingVertical: 10 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flex: 1 }}>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>14-Sep-2021</Text>
-                                        <Text style={{ fontSize: 10, color: '#9d9d9d', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                    </View>
-                                </View>
-                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
-
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-
+                        ) :
+                        <></>
+                }
             </ScrollView>
         </View>
     );
 }
-function Screen3() {
+function Screen3({ navigation, data }) {
     return (
         <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 10 }}>
-            <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#f8f8f8', borderRadius: 10,padding: 10}}>
-                <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5,  borderRadius: 10,margin: 5, marginBottom: 10 }}>
-                    <ImageBackground style={{borderRadius: 10,paddingHorizontal: 20, paddingVertical: 10,}} source={require('../assets/images/grg.png')} resizeMode='cover'>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: '#26A245', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                        </View>
-                        <View style={{ height: 1, backgroundColor: '#26A245', marginTop: 10, opacity: 0.3  }} />
-                        <View style={{ paddingVertical: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                                <View style={{ flex: 1 }}>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>14-Sep-2021</Text>
-                                            <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                        </View>
-                                    </View>
-                                    <Text style={{ fontSize: 20, color: '#26A245', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10}}>Completed</Text>
-                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine:'underline' }}>View Details</Text>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 }}>
 
-                                </View>
-                            </View>
-                        </View>
-                    </ImageBackground>
-                   
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5,  borderRadius: 10,margin: 5, marginBottom: 10 }}>
-                    <ImageBackground style={{borderRadius: 10,paddingHorizontal: 20, paddingVertical: 10,}} source={require('../assets/images/gre.png')} resizeMode='cover'>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: '#A22634', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                        </View>
-                        <View style={{ height: 1, backgroundColor: '#A22634', marginTop: 10, opacity: 0.3 }} />
-                        <View style={{ paddingVertical: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                                <View style={{ flex: 1 }}>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>14-Sep-2021</Text>
-                                            <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                        </View>
-                                    </View>
-                                    <Text style={{ fontSize: 20, color: '#A22634', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10}}>Cancelled</Text>
-                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine:'underline' }}>View Details</Text>
+                {
+                    data.length > 0 ?
+                        data.map(item => {
+                            if (item.bookingstatusid?.name === 'BOOKING_COMPLETED') {
+                                return (
+                                    <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                        <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/grg.png')} resizeMode='cover'>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ color: '#26A245', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
+                                                <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text>  {item.bookingid?.bookingId}</Text>
+                                            </View>
+                                            <View style={{ height: 1, backgroundColor: '#26A245', marginTop: 10, opacity: 0.3 }} />
+                                            <View style={{ paddingVertical: 10 }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                                                    <View style={{ flex: 1 }}>
+                                                        <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                            <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
+                                                            <View style={{ marginLeft: 10 }}>
+                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('MM-DD-YYYY')}</Text>
+                                                                <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('hh:mm a') + " - " + moment(new Date(item.bookingid?.totime)).format('hh:mm a')}</Text>
+                                                            </View>
+                                                        </View>
+                                                        <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                            <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
+                                                            <View style={{ marginLeft: 10 }}>
+                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                            </View>
+                                                        </View>
+                                                        <Text style={{ fontSize: 20, color: '#26A245', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10 }}>Completed</Text>
+                                                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine: 'underline' }}>View Details</Text>
 
-                                </View>
-                            </View>
-                        </View>
-                    </ImageBackground>
-                   
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5,  borderRadius: 10,margin: 5, marginBottom: 10 }}>
-                    <ImageBackground style={{borderRadius: 10,paddingHorizontal: 20, paddingVertical: 10,}} source={require('../assets/images/grg.png')} resizeMode='cover'>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: '#26A245', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                        </View>
-                        <View style={{ height: 1, backgroundColor: '#26A245', marginTop: 10, opacity: 0.3  }} />
-                        <View style={{ paddingVertical: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                                <View style={{ flex: 1 }}>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>14-Sep-2021</Text>
-                                            <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                        </View>
-                                    </View>
-                                    <Text style={{ fontSize: 20, color: '#26A245', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10}}>Completed</Text>
-                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine:'underline' }}>View Details</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </ImageBackground>
 
-                                </View>
-                            </View>
-                        </View>
-                    </ImageBackground>
-                   
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5,  borderRadius: 10,margin: 5, marginBottom: 10 }}>
-                    <ImageBackground style={{borderRadius: 10,paddingHorizontal: 20, paddingVertical: 10,}} source={require('../assets/images/grg.png')} resizeMode='cover'>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: '#26A245', fontSize: 18, fontWeight: '600' }}>AC Repair</Text>
-                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> BH2908769</Text>
-                        </View>
-                        <View style={{ height: 1, backgroundColor: '#26A245', marginTop: 10, opacity: 0.3  }} />
-                        <View style={{ paddingVertical: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                                <View style={{ flex: 1 }}>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>14-Sep-2021</Text>
-                                            <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>(10.00 AM - 1.00 PM)</Text>
+                                    </TouchableOpacity>
+                                )
+                            } else {
+                                return (
+                                <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                    <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/gre.png')} resizeMode='cover'>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                                            <Text style={{ color: '#A22634', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
+                                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text>  {item.bookingid?.bookingId}</Text>
                                         </View>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                        <View style={{ marginLeft: 10 }}>
-                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>Lorem ipsum dolor...</Text>
-                                        </View>
-                                    </View>
-                                    <Text style={{ fontSize: 20, color: '#26A245', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10}}>Completed</Text>
-                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine:'underline' }}>View Details</Text>
+                                        <View style={{ height: 1, backgroundColor: '#A22634', marginTop: 10, opacity: 0.3 }} />
+                                        <View style={{ paddingVertical: 10 }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
+                                                        <View style={{ marginLeft: 10 }}>
+                                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('MM-DD-YYYY')}</Text>
+                                                            <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('hh:mm a') + " - " + moment(new Date(item.bookingid?.totime)).format('hh:mm a')}</Text>
+                                                        </View>
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
+                                                        <View style={{ marginLeft: 10 }}>
+                                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                        </View>
+                                                    </View>
+                                                    <Text style={{ fontSize: 20, color: '#A22634', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10 }}>Cancelled</Text>
+                                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine: 'underline' }}>View Details</Text>
 
-                                </View>
-                            </View>
-                        </View>
-                    </ImageBackground>
-                   
-                </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </ImageBackground>
+
+                                </TouchableOpacity>
+                                )
+                            }
+                        })
+                        : <></>
+                }
+
+
             </ScrollView>
         </View>
     );
- }
+}
 
-export default function ExpertBookings({navigation}) {
+export default function ExpertBookings({ navigation }) {
     const width = Dimensions.get('screen').width;
     const [modal, setModal] = React.useState(false);
-    const [value, setValue] = React.useState(4);
+    const [loading, setLoading] = React.useState(false);
+    const [value, setValue] = React.useState(2);
+    const [userId, setUserId] = React.useState('');
+    const [token, setToken] = React.useState('');
+    const [balance, setBalance] = React.useState(0);
+
+    const [ongoingBookings, setOngoingBookings] = useState([])
+    const [newBookings, setNewBookings] = useState([])
+    const [completedBookings, setCompletedBookings] = useState([])
+
+    function completedBook(item) {
+        if (item.bookingstatusid?.name === 'BOOKING_CANCELLED' || item.bookingstatusid?.name === 'BOOKING_COMPLETED') {
+            return item;
+        }
+    }
+    function ongoingBook(item) {
+        if (item.bookingstatusid?.name !== 'BOOKING_CANCELLED' && item.bookingstatusid?.name !== 'BOOKING_COMPLETED'
+            && item.bookingstatusid?.name !== 'BOOKING_ASSIGNED' && item.bookingstatusid !== null) {
+            return item;
+        }
+    }
+    const getBookingData = data => {
+        let newBooking = data.filter(dt => dt.bookingstatusid?.name === 'BOOKING_ASSIGNED')
+        let completedBooking = data.filter(completedBook)
+        let ongoingBooking = data.filter(ongoingBook)
+
+        console.log(newBooking, completedBooking, ongoingBooking)
+        setNewBookings(newBooking)
+        setCompletedBookings(completedBooking)
+        setOngoingBookings(ongoingBooking)
+    }
+
+
+    useEffect(() => {
+        AsyncStorage.multiGet(
+            ['API_TOKEN', 'USER_ID'],
+            (err, items) => {
+                if (err) {
+                    console.log("ERROR===================", err);
+                } else {
+
+                    setToken(items[0][1])
+                    setUserId(items[1][1])
+                    setLoading(true)
+                    GetWalletDetails(items[1][1], items[0][1])
+                    .then(res=>{
+                        if(res.status ===200){
+                            setBalance(res.data[0].amount)
+                        }else{
+                            setBalance(0)
+                        }
+                    }).catch(err=>{
+
+                    })
+                    GetAllBookings(items[1][1], items[0][1])
+                        .then(res => {
+                            setLoading(false)
+                            if (res.status === 200) {
+                                getBookingData(res.data)
+                            }
+
+                        }).catch(err => {
+                            setLoading(false)
+
+                            console.log("err++++++++++++", err)
+                        })
+                }
+            }
+        )
+    }, [])
+    const getWalletBG = (balance) =>{
+        if(balance>5000){
+          return require('../assets/images/walletGreenBG.png')
+        }else if(balance>1000 && balance<=5000){
+          return require('../assets/images/walletOrangeBG.png')
+        }else{
+          return require('../assets/images/walletRedBG.png')
+        }
+      }
+
     return (
         <View style={{ flex: 1, backgroundColor: '#fff', padding: 10 }}>
+
+            <Spinner
+                visible={loading}
+                size="small"
+                textContent={'Loading...'}
+                textStyle={{
+                    color: '#fff',
+                    fontSize: 14,
+                    marginTop: 2,
+                }}
+            />
+
             <TouchableOpacity style={{ position: 'absolute', zIndex: 99, elevation: 5, width: Dimensions.get('screen').width / 7, height: Dimensions.get('screen').width / 7, backgroundColor: '#4E53C8', borderRadius: 1000, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', bottom: 20, right: 20 }}>
                 <Icon name="call" size={Dimensions.get('screen').width / 15} color={'#ffffff'} />
             </TouchableOpacity>
-            <ImageBackground source={require('../assets/images/homeTopBg.png')} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15 }}>
+            <ImageBackground source={getWalletBG(balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                     <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
-                    <TouchableOpacity onPress={() => { navigation.navigate('WalletDetails') }}><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => { navigation.navigate('WalletDetails' ,{
+                        balance: balance
+                    }) }}><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
                     <Image resizeMode='cover' style={{ height: 35, width: 35, marginTop: 5 }} source={require('../assets/images/HomeCoin.png')} />
-                    <Text style={{ color: '#ffffff', fontSize: 40, fontWeight: '600', marginLeft: 10 }}>10000</Text>
+                    <Text style={{ color: '#ffffff', fontSize: 40, fontWeight: '600', marginLeft: 10 }}>{balance}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
                     <Button onPress={() => { setModal(true) }}
@@ -429,9 +355,9 @@ export default function ExpertBookings({navigation}) {
                     tabBarIndicatorStyle: { backgroundColor: '#4E53C8' }
                 }}
             >
-                <Tab.Screen name="New" component={Screen1} />
-                <Tab.Screen name="Ongoing" component={Screen2} />
-                <Tab.Screen name="Complete" component={Screen3} />
+                <Tab.Screen name="New" children={() => <Screen1 navigation={navigation} data={newBookings} />} />
+                <Tab.Screen name="Ongoing" children={() => <Screen2 navigation={navigation} data={ongoingBookings} />} />
+                <Tab.Screen name="Complete" children={() => <Screen3 navigation={navigation} data={completedBookings} />} />
 
             </Tab.Navigator>
             <Modal
@@ -458,7 +384,7 @@ export default function ExpertBookings({navigation}) {
                             <TouchableOpacity onPress={() => { value > 1 && setValue(value - 1) }} style={{ backgroundColor: '#05194E', borderRadius: 100, height: 35, width: 35, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                                 <MaterialCommunityIcons name="minus" size={20} color={'#ffffff'} />
                             </TouchableOpacity>
-                                
+
                             <Text style={{ textAlign: 'center', minWidth: 30, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }}>
                                 {value}
                             </Text>
@@ -482,15 +408,15 @@ export default function ExpertBookings({navigation}) {
                         </View>
 
                         <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
-                        
-                        
-                        <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15,marginTop: 10 }}>Amount</Text>
+
+
+                        <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15, marginTop: 10 }}>Amount</Text>
                         <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 40, marginVertical: 10 }}>₹{value * 500 * .18 + (value * 500)}</Text>
 
                         <Button onPress={() => { setModal(false) }}
                             style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '60%', alignSelf: 'center' }}
                             mode="contained">
-                            <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Buy {value*500} coins</Text>
+                            <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Buy {value * 500} coins</Text>
                         </Button>
                     </View>
                 </View>

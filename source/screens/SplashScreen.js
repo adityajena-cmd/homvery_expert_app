@@ -6,13 +6,16 @@ const Splash = ({ navigation }) => {
     useEffect(() => {
         setTimeout(() => {
             AsyncStorage.multiGet(
-                ['API_TOKEN', 'USER_ID'],
+                ['API_TOKEN', 'USER_ID','ON_BOARD'],
                 (err, items) => {
                     if (err) {
                         console.warn(err);
                         navigation.replace('Login');
                     } else {
-                        if (items[0][1] !== null && items[1][1] !== null) {
+                        if(items[2][1] === 'HOME'){
+                            navigation.replace('Home')
+                        }
+                        else if (items[0][1] !== null && items[1][1] !== null) {
                             navigation.replace('ProfileUploader')
 
                         } else {

@@ -4,6 +4,7 @@ import { Button } from 'react-native-paper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GetTechnicianDetails, UpdateTechnicianDetails } from '../config/apis/ProfileApis';
 import DocumentPicker from 'react-native-document-picker';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default function ProfileUploader({ navigation }) {
 
@@ -11,12 +12,57 @@ export default function ProfileUploader({ navigation }) {
     const [userId, setUserId] = useState('')
     const [count, setCount] = useState(0)
     const [profileData, setProfileData] = useState('')
+    const [loading, setLoading] = useState(false);
 
     const [aadharDoc, setAadharDoc] = useState(null)
     const [signatureDoc, setSignatureDoc] = useState(null)
     const [covidDoc, setCovidDoc] = useState(null)
 
 
+    const saveDetailsID = async (id) => {
+        try {
+            await AsyncStorage.setItem('DETAILS_ID', id.toString());
+
+        }
+        catch (err) {
+            console.log(err)
+
+        }
+    }
+    const saveDetailsOnBoard=async()=>{
+        try {
+            await AsyncStorage.setItem('ON_BOARD',"DETAILS");
+            navigation.replace("Home",{screen:"MyProfile"})
+
+        }
+        catch (err) {
+            console.log(err)
+
+        }
+    }
+
+    const saveDocOnBoard=async()=>{
+        try {
+            await AsyncStorage.setItem('ON_BOARD', "DOCS");
+            navigation.replace("Home",{screen:"MyProfile"})
+
+        }
+        catch (err) {
+            console.log(err)
+
+        }
+    }
+
+    const saveApprovedOnBoard=async()=>{
+        try {
+            await AsyncStorage.setItem('ON_BOARD', "APPROVED");
+            navigation.replace("Home",{screen:"MyProfile"})
+        }
+        catch (err) {
+            console.log(err)
+
+        }
+    }
     useEffect(() => {
         AsyncStorage.multiGet(
             ['API_TOKEN', 'USER_ID'],
@@ -27,19 +73,36 @@ export default function ProfileUploader({ navigation }) {
                     settoken(items[0][1])
                     setUserId(items[1][1])
                     console.log(items);
+                    setLoading(true)
                     GetTechnicianDetails(items[1][1], items[0][1])
                         .then(res => {
                             console.log(res.data)
                             if (res.status === 200) {
+                                saveDetailsID(res.data[0].id);
+                                
                                 if (res.data[0]?.aadharcard_photo !== null && res.data[0]?.signature !== null
                                     && res.data[0]?.covidcertificate !== null) {
-                                        
-                                    navigation.replace('Home')
+                                        if(res.data[0]?.bank_account_number != '' && res.data[0]?.experience != null ){
+                                            saveDetailsOnBoard()
+
+                                        }else{
+                                            saveDocOnBoard()
+
+                                        }
                                 }
+                                if(res.data[0]?.approved === true){
+                                    // navigation.replace('Home')
+                                    console.log("APPPROOVED)))))))))))))))))))")
+                                    saveApprovedOnBoard()
+                                }
+                                setLoading(false)
                                 setProfileData(res.data[0])
+                                
 
                             }
                         }).catch(err => {
+                            setLoading(false)
+
                             console.log(err)
                         })
                 }
@@ -79,7 +142,7 @@ export default function ProfileUploader({ navigation }) {
     }
 
     const submitDocuments = () => {
-        var formData = new FormData();
+        let formData = new FormData();
         if (aadharDoc) {
             formData.append('files.aadharcard_photo', aadharDoc)
         }
@@ -119,6 +182,16 @@ export default function ProfileUploader({ navigation }) {
     return (
         <View style={{ flex: 1, backgroundColor: '#ffffff', padding: 40, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
+                <Spinner
+                    visible={loading}
+                    size="small"
+                    textContent={'Loading...'}
+                    textStyle={{
+                        color: '#fff',
+                        fontSize: 14,
+                        marginTop: 2,
+                    }}
+                />
 
                 <Image source={require('../assets/images/pu.png')}
                     resizeMode='contain'

@@ -11,6 +11,7 @@ export const FormTextInput = (props) => {
             }
             <TextInput
                 {...def}
+                
                 placeholder={placeholder}
                 placeholderTextColor={'#D8D8D8'}
                 style={{ borderWidth: 2, borderColor: '#4A4FBE', borderRadius: 10, padding: 10, }}
@@ -29,27 +30,36 @@ export default function PersonalDetails() {
                   <Image source={require('../assets/images/EP.png')} style={{ width: width * 0.5, height: width * 0.5, marginBottom: 10, alignSelf: 'center' }} />
                   <View style={{ flexDirection: 'row' }}>
                       <View style={{paddingRight: 10, flex: 1 }}>
-                          <FormTextInput label="First Name" placeholder="First Name" />
+                          <FormTextInput label="First Name" placeholder="First Name" editable = {false}/>
                       </View>
                       <View style={{paddingLeft: 10, flex: 1}}>
-                          <FormTextInput label="Last Name" placeholder="Last Name" />
+                          <FormTextInput label="Last Name" placeholder="Last Name" editable = {false}/>
                       </View>
                   </View>
                   <Text style={{ fontSize: 15, fontWeight: '500', color: '#3e414a', marginBottom: 8 }}>What is your DOB?</Text>
                   <View style={{ flexDirection: 'row' }}>
                       <View style={{paddingRight: 10, flex: 1 }}>
-                          <FormTextInput label="Day" placeholder="DD" />
+                          <FormTextInput label="Day" placeholder="DD" maxLength={2} keyboardType="numeric"/>
                       </View>
                       <View style={{paddingRight: 10, flex: 1}}>
-                          <FormTextInput label="Month" placeholder="MM" />
+                          <FormTextInput label="Month" placeholder="MM" maxLength={2} keyboardType="numeric"/>
                       </View>
                       <View style={{ flex: 1}}>
-                          <FormTextInput label="Year" placeholder="YYYY" />
+                          <FormTextInput label="Year" placeholder="YYYY" maxLength={4} keyboardType="numeric"/>
                       </View>
                   </View>
-                  <FormTextInput label="Mail ID" placeholder="Type Mail ID" />
-                  <FormTextInput label="Phone No" placeholder="9478669875" />
-                  <FormTextInput label="Secondary No" placeholder="Type Mobile Number" />
+                  <FormTextInput label="Expirence" placeholder="Expirence(Years)" keyboardType="numeric"/>
+                  <FormTextInput label="Bood Group" placeholder="Blood Group" />
+
+                  <FormTextInput label="Alternate Phone No" placeholder="Alternate phone number" maxLength={10} keyboardType={'phone-pad'}/>
+                  <FormTextInput label="Family Member Name" placeholder="Family Member Name" />
+                  <FormTextInput label="Relationship" placeholder="Relationship" />
+                  <FormTextInput label="Family member contact" placeholder="Family member contact" maxLength={10} keyboardType={'phone-pad'}/>
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#3e414a', marginBottom: 8 }}>Bank Details </Text>
+
+                  <FormTextInput label="Account Number" placeholder="Account Number" keyboardType={'numeric'}/>
+                  <FormTextInput label="Bank Name" placeholder="Bank Name" />
+                  <FormTextInput label="IFSC code" placeholder="IFSC code" />
               </View>
 
           </ScrollView>
