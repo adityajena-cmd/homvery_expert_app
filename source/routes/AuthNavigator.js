@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { getFocusedRouteNameFromRoute, useNavigation, useRoute } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Modal from 'react-native-modal'
 
 
 import SplashScreenComponent from '../screens/SplashScreen';
@@ -24,6 +25,8 @@ import { GetTechnicianDetails, UpdateTechnicianDetails } from '../config/apis/Pr
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createMaterialBottomTabNavigator();
+// const Drawer = createDrawerNavigator();
+
 function Screen() {
   return (
     <View style={{ flex: 1, backgroundColor: '#ffffff', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
@@ -31,6 +34,13 @@ function Screen() {
     </View>
   )
 }
+// export function DrawerNav() {
+//   return (
+//       <Drawer.Navigator initialRouteName="Homedrawer">
+//         <Drawer.Screen name="Homedrawer" component={Bottomtabs} />
+//       </Drawer.Navigator>
+//   );
+// }
 function Bottomtabs() {
   return (
     <BottomTab.Navigator
@@ -77,6 +87,7 @@ const AuthNavigator = () => {
   const [online, setOnline] = React.useState(false);
   const [detailId, setDetailId] = React.useState('');
   const [token, setToken] = React.useState('');
+  const [modal, setModal] = React.useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -121,6 +132,7 @@ const AuthNavigator = () => {
   }
 
   return (
+    <>
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen
         name="Splash"
@@ -154,8 +166,8 @@ const AuthNavigator = () => {
         name="Home"
         component={Bottomtabs}
         options={({ route, navigation }) => ({
-          headerLeft: () => (<TouchableOpacity onPress={() => { getFocusedRouteNameFromRoute(route) === "My Profile" && navigation.goBack() }}>
-            <MaterialCommunityIcons name={getFocusedRouteNameFromRoute(route) === "My Profile" ? "arrow-left" : "menu"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
+          headerLeft: () => (<TouchableOpacity onPress={() => { getFocusedRouteNameFromRoute(route) === "My Profile" ? navigation.goBack() : setModal(true) }}>
+          <MaterialCommunityIcons name={getFocusedRouteNameFromRoute(route) === "My Profile" ? "arrow-left" : "menu"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
           </TouchableOpacity>),
           headerTitleAlign: 'center',
           headerTitle: () => (getFocusedRouteNameFromRoute(route) === "My Profile" && <Text style={{ color: '#000000', fontWeight: '500', fontSize: 15 }}>My Profile</Text>),
@@ -255,6 +267,31 @@ const AuthNavigator = () => {
         }}
       />
     </Stack.Navigator>
+    <Modal
+    isVisible={modal}
+    hasBackdrop={true}
+    backdropOpacity={0.3}
+    backdropColor={"#000000"}
+    animationIn="slideInLeft"
+    animationOut="slideOutLeft"
+    swipeDirection={['down', "up", "left", "right"]}
+    onSwipeComplete={() => { setModal(false) }}
+    onBackdropPress={() => { setModal(false) }}
+    style={{ margin: 0, justifyContent: "flex-start", }}>
+    <View style={{
+      backgroundColor: '#ffffff',
+      paddingHorizontal: 20,
+      paddingVertical: 20,
+      display: 'flex',
+      alignContent: 'flex-start',
+      alignItems: 'flex-start',
+      flex: 1,
+      width: Dimensions.get('screen').width / 1.5
+    }}>
+
+    </View>
+  </Modal>
+  </>
   )
 };
 
