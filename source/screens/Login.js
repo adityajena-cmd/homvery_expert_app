@@ -5,14 +5,18 @@ import { Login } from '../config/apis/AuthApi'
 
 const LoginScreen = ({navigation}) => {
     const [value, setvalue] = useState('9588754120')
+    const [loading, setLoading] = useState(false);
 
     const getOTP =()=>{
+
         if(value === '' || value === null || value.length!=10){
             ToastAndroid.show('Enter a Valid Number!', ToastAndroid.SHORT);
         }else{
+            setLoading(true)
             Login({
                 phonenumber:value
             }).then(res=>{
+                setLoading(false)
                 console.log(res.data)
                 if(res.status === 200){
                     ToastAndroid.show('OTP Sent!', ToastAndroid.SHORT);
@@ -21,6 +25,8 @@ const LoginScreen = ({navigation}) => {
                     })
                 }
             }).catch(err=>{
+                setLoading(false)
+
                 ToastAndroid.show(err.response.data.message, ToastAndroid.LONG);
             })
            
@@ -54,7 +60,10 @@ const LoginScreen = ({navigation}) => {
                         </View>
                     </View>
                     <Button onPress={getOTP}
-                        style={{ marginTop: 20, width: '100%', fontSize: 20, backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
+                        disabled={loading }
+                        loading={ loading}
+                        color='#05194E'
+                        style={{ marginTop: 20, width: '100%', fontSize: 20,  borderRadius: 10, paddingVertical: .5 }}
                         mode="contained"
                     ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Request OTP</Text></Button>
 

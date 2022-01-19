@@ -29,10 +29,10 @@ export default function ProfileUploader({ navigation }) {
 
         }
     }
-    const saveDetailsOnBoard=async()=>{
+    const saveDetailsOnBoard = async () => {
         try {
-            await AsyncStorage.setItem('ON_BOARD',"DETAILS");
-            navigation.replace("Home",{screen:"MyProfile"})
+            await AsyncStorage.setItem('ON_BOARD', "DETAILS");
+            navigation.replace("Home", { screen: "MyProfile" })
 
         }
         catch (err) {
@@ -41,10 +41,10 @@ export default function ProfileUploader({ navigation }) {
         }
     }
 
-    const saveDocOnBoard=async()=>{
+    const saveDocOnBoard = async () => {
         try {
             await AsyncStorage.setItem('ON_BOARD', "DOCS");
-            navigation.replace("Home",{screen:"MyProfile"})
+            navigation.replace("Home", { screen: "MyProfile" })
 
         }
         catch (err) {
@@ -53,10 +53,10 @@ export default function ProfileUploader({ navigation }) {
         }
     }
 
-    const saveApprovedOnBoard=async()=>{
+    const saveApprovedOnBoard = async () => {
         try {
             await AsyncStorage.setItem('ON_BOARD', "APPROVED");
-            navigation.replace("Home",{screen:"MyProfile"})
+            navigation.replace("Home", { screen: "MyProfile" })
         }
         catch (err) {
             console.log(err)
@@ -79,25 +79,25 @@ export default function ProfileUploader({ navigation }) {
                             console.log(res.data)
                             if (res.status === 200) {
                                 saveDetailsID(res.data[0].id);
-                                
+
                                 if (res.data[0]?.aadharcard_photo !== null && res.data[0]?.signature !== null
                                     && res.data[0]?.covidcertificate !== null) {
-                                        if(res.data[0]?.bank_account_number != '' && res.data[0]?.experience != null ){
-                                            saveDetailsOnBoard()
+                                    if (res.data[0]?.bank_account_number != '' && res.data[0]?.experience != null) {
+                                        saveDetailsOnBoard()
 
-                                        }else{
-                                            saveDocOnBoard()
+                                    } else {
+                                        saveDocOnBoard()
 
-                                        }
+                                    }
                                 }
-                                if(res.data[0]?.approved === true){
+                                if (res.data[0]?.approved === true) {
                                     // navigation.replace('Home')
                                     console.log("APPPROOVED)))))))))))))))))))")
                                     saveApprovedOnBoard()
                                 }
                                 setLoading(false)
                                 setProfileData(res.data[0])
-                                
+
 
                             }
                         }).catch(err => {
@@ -142,6 +142,7 @@ export default function ProfileUploader({ navigation }) {
     }
 
     const submitDocuments = () => {
+        setLoading(true)
         let formData = new FormData();
         if (aadharDoc) {
             formData.append('files.aadharcard_photo', aadharDoc)
@@ -161,7 +162,7 @@ export default function ProfileUploader({ navigation }) {
         UpdateTechnicianDetails(profileData.id, token, formData)
             .then(res => {
                 console.log(res.data);
-
+                setLoading(false)
                 setAadharDoc(null)
                 setCovidDoc(null)
                 setSignatureDoc(null)
@@ -176,6 +177,7 @@ export default function ProfileUploader({ navigation }) {
 
             }).catch(err => {
                 console.log(err.response.data)
+                setLoading(false)
             })
 
     }
@@ -284,7 +286,11 @@ export default function ProfileUploader({ navigation }) {
                 <Button onPress={() => {
                     submitDocuments()
                 }}
-                    style={{ marginTop: 30, width: '60%', fontSize: 20, backgroundColor: '#05194E', borderRadius: 10, alignSelf: 'center' }}
+                mode="contained"
+                    disabled={loading }
+                    loading={ loading}
+                    color='#05194E'
+                    style={{ marginTop: 30, width: '60%', fontSize: 20, borderRadius: 10, alignSelf: 'center' }}
                     mode="contained"
                 ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Submit</Text></Button>
             </ScrollView>

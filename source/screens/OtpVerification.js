@@ -3,45 +3,53 @@ import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, ToastAndro
 import OTPTextInput from 'react-native-otp-textinput'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import { Button } from 'react-native-paper'
-import { CheckOTP } from '../config/apis/AuthApi'
+import { CheckOTP, Login } from '../config/apis/AuthApi'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OtpVerification = ({ navigation, route }) => {
 
     const [otp, setOtp] = useState('')
+    const [loading, setLoading] = useState(false);
 
-    const saveLoginDetails = async(token,user_id,user_name="",email="" ) =>{
+    const [isError, setError] = useState(false)
+
+
+    const saveLoginDetails = async (token, user_id, user_name = "", email = "") => {
         try {
-        await AsyncStorage.setItem('API_TOKEN', token);
-        await AsyncStorage.setItem('USER_EMAIL', email);
-        await AsyncStorage.setItem('USER_ID', user_id.toString());
-        await AsyncStorage.setItem('USER_NAME', user_name);
-        navigation.replace('ProfileUploader')
-        
+            await AsyncStorage.setItem('API_TOKEN', token);
+            await AsyncStorage.setItem('USER_EMAIL', email);
+            await AsyncStorage.setItem('USER_ID', user_id.toString());
+            await AsyncStorage.setItem('USER_NAME', user_name);
+            navigation.replace('ProfileUploader')
+
         }
-        catch(err){
+        catch (err) {
             console.log(err)
             alert(err)
         }
 
     }
 
-    const getOTP =()=>{
+    const getOTP = () => {
+        setLoading(true)
         let value = route?.params.num
-        if(value === '' || value === null || value.length!=10){
+        if (value === '' || value === null || value.length != 10) {
             ToastAndroid.show('Enter a Valid Number!', ToastAndroid.SHORT);
-        }else{
+        } else {
             Login({
-                phonenumber:value
-            }).then(res=>{
+                phonenumber: value
+            }).then(res => {
+                setLoading(false)
                 console.log(res.data)
-                if(res.status === 200){
+                if (res.status === 200) {
                     ToastAndroid.show('OTP Sent Again!', ToastAndroid.SHORT);
                 }
-            }).catch(err=>{
+            }).catch(err => {
+                setLoading(false)
+
                 ToastAndroid.show(err.response.data.message, ToastAndroid.LONG);
             })
-           
+
         }
     }
 
@@ -49,22 +57,34 @@ const OtpVerification = ({ navigation, route }) => {
         if (otp === '' || otp === null || otp.length != 4) {
             ToastAndroid.show('Enter a Valid OTP !', ToastAndroid.SHORT);
         } else {
+            setLoading(true)
             CheckOTP(
                 {
                     phonenumber: route?.params.num,
                     otp: otp
                 }
-            ).then(res=>{
-                if(res.status === 200){
+            ).then(res => {
+                setLoading(false)
+
+                if (res.status === 200) {
                     saveLoginDetails(
                         res.data.jwt,
                         res.data.user.id,
                         res.data.user.username,
                         res.data.user.email,
                     );
+                } else {
+                    ToastAndroid.show('Enter a Valid OTP!', ToastAndroid.SHORT);
+                    setError(true)
                 }
-                console.log(res.data,res.status)
-            }).catch(err=>{
+                console.log(res.data, res.status)
+            }).catch(err => {
+                setLoading(false)
+
+
+                ToastAndroid.show('Enter a Valid OTP!', ToastAndroid.SHORT);
+                setError(true)
+
                 console.log(err.response.data)
             })
         }
@@ -81,16 +101,24 @@ const OtpVerification = ({ navigation, route }) => {
                 <View style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                     <Image source={require('../assets/images/otpImg1.png')} style={{ resizeMode: 'contain', height: 150, width: 250, marginVertical: 40 }} />
                     <Text style={{ color: '#05194E', fontSize: 20, fontWeight: '500' }}>We have sent a verification code to</Text>
-                    <Text style={{ color: '#05194E', fontSize: 30, fontWeight: '500', marginTop: 20 }}>{'+91 - '+route?.params.num}</Text>
+                    <Text style={{ color: '#05194E', fontSize: 30, fontWeight: '500', marginTop: 20 }}>{'+91 - ' + route?.params.num}</Text>
                     <OTPTextInput
-                        tintColor={'#00B0EB'}
-                        offTintColor={'#00B0EB'}
-                        handleTextChange={text => { setOtp(text) }}
+                        tintColor={!isError ? '#00B0EB' : '#FF0000'}
+                        offTintColor={!isError ? '#00B0EB' : '#FF0000'}
+
+                        handleTextChange={text => { setOtp(text); setError(false) }}
                         textInputStyle={{ borderRadius: 10, borderWidth: 2, borderColor: '#00B0EB', marginVertical: 20, borderBottomWidth: 2 }}
                     />
-                    <TouchableOpacity onPress={getOTP}><Text style={{ color: '#8A8A8A', fontSize: 20, fontWeight: '500', marginTop: 10 }}>If you don't receive a OTP!<Text style={{ color: '#05194E', fontSize: 20, fontWeight: '500', }}>   Resend</Text></Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{
+                        if(!loading){
+                            getOTP()
+                        }
+                        }}><Text style={{ color: '#8A8A8A', fontSize: 20, fontWeight: '500', marginTop: 10 }}>If you don't receive a OTP!<Text style={{ color: '#05194E', fontSize: 20, fontWeight: '500', }}>   Resend</Text></Text></TouchableOpacity>
                     <Button onPress={validateOTP}
-                        style={{ marginTop: 30, width: '60%', fontSize: 20, backgroundColor: '#05194E', borderRadius: 10, paddingVertical: 5 }}
+                        disabled={loading}
+                        loading={loading}
+                        color='#05194E'
+                        style={{ marginTop: 30, width: '60%', fontSize: 20, borderRadius: 10, paddingVertical: 5 }}
                         mode="contained"
                     ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Verify</Text></Button>
 
