@@ -49,7 +49,9 @@ export default function PersonalDetails() {
                       </View>
                   </View>
                   <FormTextInput label="Expirence" placeholder="Expirence(Years)" keyboardType="numeric"/>
-                  <FormTextInput label="Bood Group" placeholder="Blood Group" />
+                  <FormTextInput label="Blood Group" placeholder="Blood Group" />
+                  <FormTextInput label="Aadhar Card No" placeholder="Aadhar Card No" maxLength={12} keyboardType={'numeric'}/>
+
 
                   <FormTextInput label="Alternate Phone No" placeholder="Alternate phone number" maxLength={10} keyboardType={'phone-pad'}/>
                   <FormTextInput label="Family Member Name" placeholder="Family Member Name" />

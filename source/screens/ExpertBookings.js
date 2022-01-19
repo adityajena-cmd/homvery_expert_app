@@ -39,10 +39,8 @@ function Screen1({ navigation, data }) {
                         (
                             data.map(item => {
                                 let date = new Date(item.bookingid?.fromtime)
-                                console.log(moment(date).format('hh:mm a'))
-                                // console.log(moment.unix(item.bookingid?.fromtime).format("MM/DD/YYYY"))
                                 return (
-                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails') }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('OngoingBooking',{data:item}) }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                             <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
                                             <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> {item.bookingid?.bookingId}</Text>
@@ -93,9 +91,8 @@ function Screen2({ navigation, data }) {
                         (
                             data.map(item => {
                                 let date = new Date(item.bookingid?.fromtime)
-                                console.log(moment(date).format('hh:mm a'))
                                 return (
-                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails') }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('OngoingBooking',{data:item}) }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                             <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
                                             <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> {item.bookingid?.bookingId}</Text>
@@ -143,7 +140,7 @@ function Screen3({ navigation, data }) {
                         data.map(item => {
                             if (item.bookingstatusid?.name === 'BOOKING_COMPLETED') {
                                 return (
-                                    <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => {navigation.navigate('BookingDetails',{data:item}) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
                                         <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/grg.png')} resizeMode='cover'>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ color: '#26A245', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
@@ -178,7 +175,7 @@ function Screen3({ navigation, data }) {
                                 )
                             } else {
                                 return (
-                                <TouchableOpacity onPress={() => { }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails',{data:item})}} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
                                     <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/gre.png')} resizeMode='cover'>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                             <Text style={{ color: '#A22634', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>

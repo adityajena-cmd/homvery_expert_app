@@ -1,7 +1,18 @@
+import moment from 'moment';
 import React from 'react';
 import { View, Text, ScrollView, Image, Dimensions } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+const getFullAddress = (addr) => {
+    let address = ''
+    if (addr === null || addr === undefined) {
+        address = "NA"
+    } else {
+        address = addr.flat + ", " + addr.street + ", " + addr.addressline1 + "\n" + addr.landmark + ", " + addr.pincode + ", " + addr.city;
+    }
+
+    return address
+}
 
 export const Invoice = (props) => {
     const width = Dimensions.get('screen').width;
@@ -71,20 +82,22 @@ export const Invoice = (props) => {
         </View>
     );
 }
-export default function BookingDetails() {
+export default function BookingDetails({navigation,route}) {
+    console.log("route----------------",route?.params?.data?.id)
+    let data = route?.params?.data;
     const width = Dimensions.get('screen').width
     return (
         <View style={{ flex: 1, backgroundColor: '#f8f8f8', padding: 20 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 5, padding: 20 }}>
-                    <Text style={{ color: '#000000', fontSize: 15, fontWeight: '500', paddingBottom: 10, borderBottomColor: '#000000', borderBottomWidth: 0.5, marginBottom: 10 }}>BH2908769  <MaterialCommunityIcons size={17} name='content-copy' color={'#000000'} /></Text>
+                    <Text style={{ color: '#000000', fontSize: 15, fontWeight: '500', paddingBottom: 10, borderBottomColor: '#000000', borderBottomWidth: 0.5, marginBottom: 10 }}>{data?.bookingid?.bookingId}  <MaterialCommunityIcons size={17} name='content-copy' color={'#000000'} /></Text>
                     <View style={{ flexDirection: 'row', marginBottom: 20 }}>
                         <View style={{ paddingRight: 20 }}>
                             <Image style={{ marginTop: 5 }} source={require('../assets/images/esc1.png')} resizeMode='cover' />
                         </View>
                         <View >
                             <Text style={{ color: '#000000', fontSize: 18, fontWeight: '600' }}>Service Type</Text>
-                            <Text style={{ color: '#000000', fontSize: 15, fontWeight: '400', width: width / 1.5 }}>Air Conditioner Service</Text>
+                            <Text style={{ color: '#000000', fontSize: 15, fontWeight: '400', width: width / 1.5 }}>{data?.bookingid?.serviceid?.name}</Text>
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', marginBottom: 20 }}>
@@ -93,7 +106,7 @@ export default function BookingDetails() {
                         </View>
                         <View >
                             <Text style={{ color: '#000000', fontSize: 18, fontWeight: '600' }}>Service Location</Text>
-                            <Text style={{ color: '#000000', fontSize: 15, fontWeight: '400', width: width / 1.5 }}>Lorem ipsum dolor sit amet, consetetur ipsum dolor sit amet, consetetur   </Text>
+                            <Text style={{ color: '#000000', fontSize: 15, fontWeight: '400', width: width / 1.5 }}>{getFullAddress(data.bookingid?.address)} </Text>
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', marginBottom: 20 }}>
@@ -102,12 +115,15 @@ export default function BookingDetails() {
                         </View>
                         <View >
                             <Text style={{ color: '#000000', fontSize: 18, fontWeight: '600' }}>Date & time</Text>
-                            <Text style={{ color: '#000000', fontSize: 15, fontWeight: '400', width: width / 1.5 }}>12 Sep 2021    12.00 PM - 3.00 PM</Text>
+                            <Text style={{ color: '#000000', fontSize: 15, fontWeight: '400', width: width / 1.5 }}>{moment(new Date(data.bookingid?.fromtime)).format('Do MMM YYYY')+"  -  "+moment(new Date(data.bookingid?.fromtime)).format('hh:mm a') + " - " + moment(new Date(data.bookingid?.totime)).format('hh:mm a')}</Text>
                         </View>
                     </View>
                 </View>
-                <Invoice paid={true} />
-                <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 3, paddingTop: 20, marginBottom: 20, paddingBottom: 40, paddingHorizontal: 20 }}>
+                <Invoice paid={false} />
+
+
+
+                {/* <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 3, paddingTop: 20, marginBottom: 20, paddingBottom: 40, paddingHorizontal: 20 }}>
                     <Text style={{ color: '#000000', fontSize: 14, textAlign: 'center' }}>18-12-2021</Text>
                     <View style={{ height: 1, backgroundColor: '#DCEBF7', marginTop: 10, marginBottom: 10 }} />
                     <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
@@ -147,7 +163,7 @@ export default function BookingDetails() {
                         <Text style={{ fontSize: 15, color: '#707070', fontWeight: '500', textDecorationLine: 'underline' }}>BH2908769</Text>
                         <Text style={{ fontSize: 16, color: '#000000', fontWeight: '600' }}>₹500</Text>
                     </View>
-                </View>
+                </View> */}
             </ScrollView>
         </View>
     );
