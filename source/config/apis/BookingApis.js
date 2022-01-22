@@ -66,6 +66,11 @@ const RevisitTechinician = ( token,body) => {
   return axios.put(urlConfig.baseURL + '/booking/revisitBooking',body, header);
 };
 
+const ShareQuotation = ( token,body) => {
+  const header = getUserToken(token);
+
+  return axios.post(urlConfig.baseURL + '/booking/createQuotation',body, header);
+};
 
 const GetInventory = ( token,keyword) => {
   const header = getUserToken(token);
@@ -87,5 +92,6 @@ export {
   ReachedTechinician,
   RevisitTechinician,
   GetBookingStatus,
-  GetInventory
+  GetInventory,
+  ShareQuotation as CreateNewQuotation
 };

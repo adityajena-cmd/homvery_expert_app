@@ -3,6 +3,8 @@ import { View, Text, ScrollView, Image, Dimensions, TouchableOpacity } from 'rea
 import { Button } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GetTechnicianDetails } from '../config/apis/ProfileApis';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 
@@ -36,127 +38,145 @@ export const StepperStage = ({ stage }) => {
 export default function ExpertProfile({ navigation }) {
   const width = Dimensions.get('screen').width
   const [status, setstatus] = useState(1)
+  const [token, setToken] = useState('')
+  const [userId, setUserId] = useState('')
+  const [profile, setProfile] = useState({})
 
-  useEffect(() => {
-    AsyncStorage.multiGet(
-      ['API_TOKEN', 'ON_BOARD'],
-      (err, items) => {
-        if (err) {
-          console.warn(err);
-        } else {
-          console.log(items[1][1])
-          switch (items[1][1]) {
-            case 'APPROVED':
-              setstatus(3);
-              break;
-            case 'DOCS':
-              setstatus(1)
-              break;
-            case 'DETAILS':
-              setstatus(2)
-              break;
-            case 'HOME':
-              setstatus(0)
-              break;
-            default:
-              setstatus(1)
-              break
-          }
+  const getTechinician = ( token,userId) => {
+    GetTechnicianDetails(userId, token)
+      .then(res => {
+        console.log("HOHOHOHOHOHOH------------------", res.data[0])
+        if (res.status === 200) {
+          setProfile(res.data[0])
         }
-      })
-  }, [])
-
-  const approveTechnician = async () => {
-    try {
-      await AsyncStorage.setItem('ON_BOARD', "HOME");
-      navigation.replace("Home")
-
-    }
-    catch (err) {
-      console.log(err)
-
-    }
+      }).catch(err => console.log("lololo",err.response.data))
   }
 
-
-  return (
-    <View style={{ flex: 1, paddingHorizontal: 20, }}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 20 }}>
-
-
-        <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 3, marginBottom: 20 }}>
-          {status !== 0 &&
-            <StepperStage stage={status} />
+  useFocusEffect(
+    React.useCallback(() => {
+      AsyncStorage.multiGet(
+        ['API_TOKEN', 'ON_BOARD', 'USER_ID'],
+        (err, items) => {
+          if (err) {
+            console.warn(err);
+          } else {
+            setToken(items[0][1])
+            setUserId(items[2][1])
+            console.log(items[1][1])
+            switch (items[1][1]) {
+              case 'APPROVED':
+                setstatus(3);
+                break;
+              case 'DOCS':
+                setstatus(1)
+                break;
+              case 'DETAILS':
+                setstatus(2)
+                break;
+              case 'HOME':
+                getTechinician(items[0][1],items[2][1])
+                setstatus(0)
+                break;
+              default:
+                setstatus(1)
+                break
+            }
           }
-          {
-            status === 1 &&
-            <>
-              <View style={{ marginVertical: 20, backgroundColor: '#F5F5F550', height: 6 }} />
+        })
+    }, [])
+  )
 
-              <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 15, textAlign: 'center', marginVertical: 10 }}>Approval Status Pending</Text>
-              <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Please fill all the details in my profile section</Text>
+const approveTechnician = async () => {
+  try {
+    await AsyncStorage.setItem('ON_BOARD', "HOME");
+    navigation.replace("Home")
 
-              <Button onPress={() => { }}
-                style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '50%', alignSelf: 'center', marginBottom: 50, marginTop: 10 }}
-                mode="contained">
-                <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Submit Details</Text>
-              </Button>
-            </>
-          }
+  }
+  catch (err) {
+    console.log(err)
 
-          {
-            status === 2 &&
-            <>
-              <View style={{ paddingHorizontal: 20 }}>
-                <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 15, marginVertical: 10 }}>Profile verification status pending</Text>
-                <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, marginBottom: 10 }}>Profile verification is pending from Homvery.
-                  You will get notification once its approved.</Text>
-              </View>
-            </>
-          }
-
-          {
-            status === 3 &&
-            <>
-
-              <View style={{ marginVertical: 30 }}>
-                <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 20, textAlign: 'center', marginVertical: 10 }}>Congratulations!</Text>
-                <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Your profile has been approved.</Text>
-
-                <Button onPress={() => { approveTechnician() }}
-                  style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '50%', alignSelf: 'center', marginBottom: 50, marginTop: 10 }}
-                  mode="contained">
-                  <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Lets Start</Text>
-                </Button>
-              </View>
+  }
+}
 
 
-            </>
-          }
+return (
+  <View style={{ flex: 1, paddingHorizontal: 20, }}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 20 }}>
 
-        </View>
 
+      <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 3, marginBottom: 20 }}>
+        {status !== 0 &&
+          <StepperStage stage={status} />
+        }
+        {
+          status === 1 &&
+          <>
+            <View style={{ marginVertical: 20, backgroundColor: '#F5F5F550', height: 6 }} />
+
+            <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 15, textAlign: 'center', marginVertical: 10 }}>Approval Status Pending</Text>
+            <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Please fill all the details in my profile section</Text>
+
+            <Button onPress={() => { }}
+              style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '50%', alignSelf: 'center', marginBottom: 50, marginTop: 10 }}
+              mode="contained">
+              <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Submit Details</Text>
+            </Button>
+          </>
+        }
 
         {
-          status === 0 &&
+          status === 2 &&
           <>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center', }}>
-              <Image source={require('../assets/images/M2.png')} style={{ width: width / 4, height: width / 4 }} />
-              <View style={{ marginLeft: 30 }}>
-                <Text style={{ color: '#4E53C8', fontWeight: '600', fontSize: 20 }}>Paresh Kumar</Text>
-                <Text style={{ color: '#707070', fontWeight: '400', fontSize: 15 }}>pk@gmail.com</Text>
-                <Text style={{ color: '#707070', fontWeight: '500', fontSize: 15 }}>9586856986</Text>
-                <TouchableOpacity onPress={() => { navigation.navigate('EditProfile') }}>
-                  <Text style={{ color: '#41C461', fontWeight: '500', fontSize: 15 }}><MaterialCommunityIcons size={16} name='pencil' /> edit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={{ flex: 1, padding: 20, backgroundColor: '#ffffff', elevation: 3, borderRadius: 15, height: width, marginTop: 15, marginBottom: 20 }}>
-              <Text style={{ color: '#000000', fontWeight: '500', fontSize: 20, borderBottomColor: '#000000', borderBottomWidth: 0.5, paddingBottom: 10 }}>Manage Service</Text>
+            <View style={{ paddingHorizontal: 20 }}>
+              <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 15, marginVertical: 10 }}>Profile verification status pending</Text>
+              <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, marginBottom: 10 }}>Profile verification is pending from Homvery.
+                You will get notification once its approved.</Text>
             </View>
           </>
         }
-      </ScrollView>
-    </View>
-  );
+
+        {
+          status === 3 &&
+          <>
+
+            <View style={{ marginVertical: 30 }}>
+              <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 20, textAlign: 'center', marginVertical: 10 }}>Congratulations!</Text>
+              <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Your profile has been approved.</Text>
+
+              <Button onPress={() => { approveTechnician() }}
+                style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '50%', alignSelf: 'center', marginBottom: 50, marginTop: 10 }}
+                mode="contained">
+                <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Lets Start</Text>
+              </Button>
+            </View>
+
+
+          </>
+        }
+
+      </View>
+
+
+      {
+        status === 0 &&
+        <>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center', }}>
+            <Image source={require('../assets/images/M2.png')} style={{ width: width / 4, height: width / 4 }} />
+            <View style={{ marginLeft: 30 }}>
+              <Text style={{ color: '#4E53C8', fontWeight: '600', fontSize: 20 }}>{profile.technician && profile?.technician?.firstname + ' ' + profile?.technician?.lastname}</Text>
+              <Text style={{ color: '#707070', fontWeight: '400', fontSize: 15 }}>{profile?.technician?.email}</Text>
+              <Text style={{ color: '#707070', fontWeight: '500', fontSize: 15 }}>{profile?.technician?.phonenumber}</Text>
+              {profile.technician && <TouchableOpacity onPress={() => { navigation.navigate('EditProfile',{data:profile,token:token,user:userId}) }}>
+                <Text style={{ color: '#41C461', fontWeight: '500', fontSize: 15 }}><MaterialCommunityIcons size={16} name='pencil' /> Edit</Text>
+              </TouchableOpacity>}
+            </View>
+          </View>
+          <View style={{ flex: 1, padding: 20, backgroundColor: '#ffffff', elevation: 3, borderRadius: 15, height: width, marginTop: 15, marginBottom: 20 }}>
+            <Text style={{ color: '#000000', fontWeight: '500', fontSize: 20, borderBottomColor: '#000000', borderBottomWidth: 0.5, paddingBottom: 10 }}>Manage Service</Text>
+          </View>
+        </>
+      }
+    </ScrollView>
+  </View>
+);
 }

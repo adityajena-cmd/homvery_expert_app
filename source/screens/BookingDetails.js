@@ -1,18 +1,9 @@
 import moment from 'moment';
 import React from 'react';
-import { View, Text, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Image, Dimensions, ToastAndroid } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { copyClipboard, getFullAddress } from '../config/Utils';
 
-const getFullAddress = (addr) => {
-    let address = ''
-    if (addr === null || addr === undefined) {
-        address = "NA"
-    } else {
-        address = addr.flat + ", " + addr.street + ", " + addr.addressline1 + "\n" + addr.landmark + ", " + addr.pincode + ", " + addr.city;
-    }
-
-    return address
-}
 
 export const Invoice = (props) => {
     const width = Dimensions.get('screen').width;
@@ -90,7 +81,7 @@ export default function BookingDetails({navigation,route}) {
         <View style={{ flex: 1, backgroundColor: '#f8f8f8', padding: 20 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 5, padding: 20 }}>
-                    <Text style={{ color: '#000000', fontSize: 15, fontWeight: '500', paddingBottom: 10, borderBottomColor: '#000000', borderBottomWidth: 0.5, marginBottom: 10 }}>{data?.bookingid?.bookingId}  <MaterialCommunityIcons size={17} name='content-copy' color={'#000000'} /></Text>
+                    <Text style={{ color: '#000000', fontSize: 15, fontWeight: '500', paddingBottom: 10, borderBottomColor: '#000000', borderBottomWidth: 0.5, marginBottom: 10 }}>{data?.bookingid?.bookingId}  <MaterialCommunityIcons size={17} onPress={()=>{copyClipboard(data?.bookingid?.bookingId)}} name='content-copy' color={'#000000'} /></Text>
                     <View style={{ flexDirection: 'row', marginBottom: 20 }}>
                         <View style={{ paddingRight: 20 }}>
                             <Image style={{ marginTop: 5 }} source={require('../assets/images/esc1.png')} resizeMode='cover' />

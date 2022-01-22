@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, Dimensions, ScrollView, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
+import { View, Text, Image, Dimensions, ScrollView, TouchableOpacity, ImageBackground, TextInput, RefreshControl } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/Ionicons'
 import { Button } from 'react-native-paper';
@@ -7,32 +7,28 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Modal from 'react-native-modal'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { GetAllBookings , GetWalletDetails } from '../config/apis/BookingApis';
+import { GetAllBookings, GetWalletDetails } from '../config/apis/BookingApis';
 import Spinner from 'react-native-loading-spinner-overlay';
 import OngoingBooking from './OngoingBooking';
 import moment from 'moment';
 import { add } from 'react-native-reanimated';
+import { getFullAddress } from '../config/Utils';
 
-const getFullAddress = (addr) => {
-    let address = ''
-    if (addr === null || addr === undefined) {
-        address = "NA"
-    } else {
-        address = addr.flat + ", " + addr.street + ", " + addr.addressline1 + "\n" + addr.landmark + ", " + addr.pincode + ", " + addr.city;
-    }
-
-    return address
-}
 
 
 const Tab = createMaterialTopTabNavigator();
 
-function Screen1({ navigation, data }) {
+function Screen1({ navigation, data, onRefresh, isRefresh }) {
 
 
     return (
         <View style={{ flex: 1, backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 }}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefresh}
+                        onRefresh={onRefresh} />
+                }>
 
                 {
                     data.length > 0 ?
@@ -40,7 +36,7 @@ function Screen1({ navigation, data }) {
                             data.map(item => {
                                 let date = new Date(item.bookingid?.fromtime)
                                 return (
-                                    <TouchableOpacity onPress={() => { navigation.navigate('OngoingBooking',{data:item}) }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('OngoingBooking', { data: item }) }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                             <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
                                             <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> {item.bookingid?.bookingId}</Text>
@@ -81,10 +77,15 @@ function Screen1({ navigation, data }) {
         </View>
     );
 }
-function Screen2({ navigation, data }) {
+function Screen2({ navigation, data, onRefresh, isRefresh }) {
     return (
         <View style={{ flex: 1, backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 }}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefresh}
+                        onRefresh={onRefresh} />
+                }>
 
                 {
                     data.length > 0 ?
@@ -92,7 +93,7 @@ function Screen2({ navigation, data }) {
                             data.map(item => {
                                 let date = new Date(item.bookingid?.fromtime)
                                 return (
-                                    <TouchableOpacity onPress={() => { navigation.navigate('OngoingBooking',{data:item}) }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('OngoingBooking', { data: item }) }} style={{ backgroundColor: '#ffffff', elevation: 5, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10, marginBottom: 10 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                             <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
                                             <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text> {item.bookingid?.bookingId}</Text>
@@ -130,17 +131,22 @@ function Screen2({ navigation, data }) {
         </View>
     );
 }
-function Screen3({ navigation, data }) {
+function Screen3({ navigation, data, onRefresh, isRefresh }) {
     return (
         <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 10 }}>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 }}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#f8f8f8', borderRadius: 10, padding: 10 }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefresh}
+                        onRefresh={onRefresh} />
+                }>
 
                 {
                     data.length > 0 ?
                         data.map(item => {
                             if (item.bookingstatusid?.name === 'BOOKING_COMPLETED') {
                                 return (
-                                    <TouchableOpacity onPress={() => {navigation.navigate('BookingDetails',{data:item}) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails', { data: item }) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
                                         <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/grg.png')} resizeMode='cover'>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ color: '#26A245', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
@@ -175,38 +181,38 @@ function Screen3({ navigation, data }) {
                                 )
                             } else {
                                 return (
-                                <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails',{data:item})}} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
-                                    <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/gre.png')} resizeMode='cover'>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ color: '#A22634', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
-                                            <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text>  {item.bookingid?.bookingId}</Text>
-                                        </View>
-                                        <View style={{ height: 1, backgroundColor: '#A22634', marginTop: 10, opacity: 0.3 }} />
-                                        <View style={{ paddingVertical: 10 }}>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                                                <View style={{ flex: 1 }}>
-                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                                        <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
-                                                        <View style={{ marginLeft: 10 }}>
-                                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('MM-DD-YYYY')}</Text>
-                                                            <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('hh:mm a') + " - " + moment(new Date(item.bookingid?.totime)).format('hh:mm a')}</Text>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails', { data: item }) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                        <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/gre.png')} resizeMode='cover'>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                                                <Text style={{ color: '#A22634', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
+                                                <Text style={{ color: '#000000', fontSize: 13, fontWeight: '500' }}><Text style={{ fontWeight: '600' }}>Booking No:</Text>  {item.bookingid?.bookingId}</Text>
+                                            </View>
+                                            <View style={{ height: 1, backgroundColor: '#A22634', marginTop: 10, opacity: 0.3 }} />
+                                            <View style={{ paddingVertical: 10 }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                                                    <View style={{ flex: 1 }}>
+                                                        <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                            <MaterialCommunityIcons name="calendar-range" color={'#000000'} size={30} />
+                                                            <View style={{ marginLeft: 10 }}>
+                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('MM-DD-YYYY')}</Text>
+                                                                <Text style={{ fontSize: 10, color: '#000000', fontWeight: '600' }}>{moment(new Date(item.bookingid?.fromtime)).format('hh:mm a') + " - " + moment(new Date(item.bookingid?.totime)).format('hh:mm a')}</Text>
+                                                            </View>
                                                         </View>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                                        <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
-                                                        <View style={{ marginLeft: 10 }}>
-                                                            <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                        <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                                            <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
+                                                            <View style={{ marginLeft: 10 }}>
+                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                            </View>
                                                         </View>
-                                                    </View>
-                                                    <Text style={{ fontSize: 20, color: '#A22634', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10 }}>Cancelled</Text>
-                                                    <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine: 'underline' }}>View Details</Text>
+                                                        <Text style={{ fontSize: 20, color: '#A22634', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10 }}>Cancelled</Text>
+                                                        <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20, textDecorationLine: 'underline' }}>View Details</Text>
 
+                                                    </View>
                                                 </View>
                                             </View>
-                                        </View>
-                                    </ImageBackground>
+                                        </ImageBackground>
 
-                                </TouchableOpacity>
+                                    </TouchableOpacity>
                                 )
                             }
                         })
@@ -215,7 +221,7 @@ function Screen3({ navigation, data }) {
 
 
             </ScrollView>
-        </View>
+        </View >
     );
 }
 
@@ -227,13 +233,39 @@ export default function ExpertBookings({ navigation }) {
     const [userId, setUserId] = React.useState('');
     const [token, setToken] = React.useState('');
     const [balance, setBalance] = React.useState(0);
+    const [isRefresh, setRefresh] = React.useState(false);
 
     const [ongoingBookings, setOngoingBookings] = useState([])
     const [newBookings, setNewBookings] = useState([])
     const [completedBookings, setCompletedBookings] = useState([])
 
+
+
+    const onRefresh = () => {
+        setRefresh(true);
+        GetAllBookings(userId, token)
+            .then(res => {
+                setLoading(false)
+                console.log("working")
+                setRefresh(false);
+                if (res.status === 200) {
+                    getBookingData(res.data)
+                }
+
+            }).catch(err => {
+                setLoading(false)
+                setRefresh(false);
+                console.log("err++++++++++++", err)
+            })
+    }
+
     function completedBook(item) {
         if (item.bookingstatusid?.name === 'BOOKING_CANCELLED' || item.bookingstatusid?.name === 'BOOKING_COMPLETED') {
+            return item;
+        }
+    }
+    function newBook(item) {
+        if (item.bookingstatusid?.name === 'BOOKING_ASSIGNED') {
             return item;
         }
     }
@@ -244,7 +276,7 @@ export default function ExpertBookings({ navigation }) {
         }
     }
     const getBookingData = data => {
-        let newBooking = data.filter(dt => dt.bookingstatusid?.name === 'BOOKING_ASSIGNED')
+        let newBooking = data.filter(newBook)
         let completedBooking = data.filter(completedBook)
         let ongoingBooking = data.filter(ongoingBook)
 
@@ -256,6 +288,7 @@ export default function ExpertBookings({ navigation }) {
 
 
     useEffect(() => {
+        setRefresh(true);
         AsyncStorage.multiGet(
             ['API_TOKEN', 'USER_ID'],
             (err, items) => {
@@ -267,40 +300,41 @@ export default function ExpertBookings({ navigation }) {
                     setUserId(items[1][1])
                     setLoading(true)
                     GetWalletDetails(items[1][1], items[0][1])
-                    .then(res=>{
-                        if(res.status ===200){
-                            setBalance(res.data[0].amount)
-                        }else{
-                            setBalance(0)
-                        }
-                    }).catch(err=>{
+                        .then(res => {
+                            if (res.status === 200) {
+                                setBalance(res.data[0].amount)
+                            } else {
+                                setBalance(0)
+                            }
+                        }).catch(err => {
 
-                    })
+                        })
                     GetAllBookings(items[1][1], items[0][1])
                         .then(res => {
                             setLoading(false)
+                            setRefresh(false);
                             if (res.status === 200) {
                                 getBookingData(res.data)
                             }
 
                         }).catch(err => {
                             setLoading(false)
-
+                            setRefresh(false);
                             console.log("err++++++++++++", err)
                         })
                 }
             }
         )
     }, [])
-    const getWalletBG = (balance) =>{
-        if(balance>5000){
-          return require('../assets/images/walletGreenBG.png')
-        }else if(balance>1000 && balance<=5000){
-          return require('../assets/images/walletOrangeBG.png')
-        }else{
-          return require('../assets/images/walletRedBG.png')
+    const getWalletBG = (balance) => {
+        if (balance >= 5000) {
+            return require('../assets/images/walletGreenBG.png')
+        } else if (balance >= 1000 && balance < 5000) {
+            return require('../assets/images/walletOrangeBG.png')
+        } else {
+            return require('../assets/images/walletRedBG.png')
         }
-      }
+    }
 
     return (
         <View style={{ flex: 1, backgroundColor: '#fff', padding: 10 }}>
@@ -322,9 +356,11 @@ export default function ExpertBookings({ navigation }) {
             <ImageBackground source={getWalletBG(balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                     <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
-                    <TouchableOpacity onPress={() => { navigation.navigate('WalletDetails' ,{
-                        balance: balance
-                    }) }}><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('WalletDetails', {
+                            balance: balance
+                        })
+                    }}><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
                     <Image resizeMode='cover' style={{ height: 35, width: 35, marginTop: 5 }} source={require('../assets/images/HomeCoin.png')} />
@@ -352,9 +388,9 @@ export default function ExpertBookings({ navigation }) {
                     tabBarIndicatorStyle: { backgroundColor: '#4E53C8' }
                 }}
             >
-                <Tab.Screen name="New" children={() => <Screen1 navigation={navigation} data={newBookings} />} />
-                <Tab.Screen name="Ongoing" children={() => <Screen2 navigation={navigation} data={ongoingBookings} />} />
-                <Tab.Screen name="Complete" children={() => <Screen3 navigation={navigation} data={completedBookings} />} />
+                <Tab.Screen name="New" children={() => <Screen1 navigation={navigation} data={newBookings} onRefresh={onRefresh} isRefresh={isRefresh} />} />
+                <Tab.Screen name="Ongoing" children={() => <Screen2 navigation={navigation} data={ongoingBookings} onRefresh={onRefresh} isRefresh={isRefresh} />} />
+                <Tab.Screen name="Complete" children={() => <Screen3 navigation={navigation} data={completedBookings} onRefresh={onRefresh} isRefresh={isRefresh} />} />
 
             </Tab.Navigator>
             <Modal

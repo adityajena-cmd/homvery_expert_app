@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ImageBackground, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, Image, ImageBackground, TouchableOpacity, Dimensions, ScrollView, RefreshControl } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modal from 'react-native-modal'
@@ -15,9 +15,20 @@ export default function WalletDetails({ navigation, route }) {
   const [modal, setModal] = React.useState(false);
   const [value, setValue] = React.useState(4);
   const [transactions, setTransactions] = React.useState([]);
+  const [isRefresh, setRefresh] = React.useState(false);
+  const [load, setLoad] = React.useState(0);
+
   const [balance, setBalance] = useState(route?.params?.balance)
+
+
+  const onRefresh = () => {
+    setLoad(load+1)
+}
+
   useEffect(() => {
+    setRefresh(true)
     setBalance(route?.params?.balance)
+    setTransactions([])
     AsyncStorage.multiGet(
       ['API_TOKEN', 'USER_ID'],
       (err, items) => {
@@ -26,6 +37,8 @@ export default function WalletDetails({ navigation, route }) {
         } else {
           GetWalletTransaction(items[1][1], items[0][1])
             .then(res => {
+              setRefresh(false)
+
               console.log(res.data)
               if (res.status === 200) {
                 let data = res.data.sort(function (a, b) {
@@ -35,16 +48,18 @@ export default function WalletDetails({ navigation, route }) {
               }
 
             }).catch(err => {
+              setRefresh(false)
+
               console.log(err)
             })
         }
       })
-  }, [route?.params?.balance])
+  }, [route?.params?.balance,load])
 
   const getWalletBG = (balance) => {
-    if (balance > 5000) {
+    if (balance >= 5000) {
       return require('../assets/images/walletGreenBG.png')
-    } else if (balance > 1000 && balance <= 5000) {
+    } else if (balance >= 1000 && balance < 5000) {
       return require('../assets/images/walletOrangeBG.png')
     } else {
       return require('../assets/images/walletRedBG.png')
@@ -73,7 +88,12 @@ export default function WalletDetails({ navigation, route }) {
         </View>
       </ImageBackground>
       <Text style={{ fontSize: 18, color: '#000000', marginVertical: 10 }}>20-27 December 2021</Text>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefresh}
+            onRefresh={onRefresh} />
+        }>
         <View style={{ padding: 10, backgroundColor: '#ffffff', borderRadius: 10 }}>
 
           {

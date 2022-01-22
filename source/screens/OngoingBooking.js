@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -9,22 +9,13 @@ import { GetLocation, requestLocationPermission } from '../config/LocaitonProvid
 import Geolocation from '@react-native-community/geolocation';
 import { GetBookingStatus, ReachedTechinician, RescheduleBooking, StartTechinician } from '../config/apis/BookingApis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { copyClipboard, getFullAddress, openMaps, openPhone } from '../config/Utils';
 
 const config = {
     enableHighAccuracy: false,
     timeout: 2000,
     maximumAge: 3600000,
 };
-const getFullAddress = (addr) => {
-    let address = ''
-    if (addr === null || addr === undefined) {
-        address = "NA"
-    } else {
-        address = addr.flat + ", " + addr.street + ", " + addr.addressline1 + "\n" + addr.landmark + ", " + addr.pincode + ", " + addr.city;
-    }
-
-    return address
-}
 
 
 const data2 = [
@@ -80,6 +71,8 @@ export default function OngoingBooking({ navigation, route }) {
     const [comments, setComments] = React.useState('');
     const [fromDate, setFromDate] = React.useState(null);
     const [toDate, setToDate] = React.useState(null);
+    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         requestLocationPermission()
@@ -100,7 +93,10 @@ export default function OngoingBooking({ navigation, route }) {
         };
     }, [])
 
-    const getToken = () => {
+
+    useEffect(() => {
+        setLoading(true)
+        console.log("STATE COULD CHANGE----", data.bookingid?.id)
         AsyncStorage.multiGet(
             ['API_TOKEN', 'USER_ID'],
             (err, items) => {
@@ -108,34 +104,36 @@ export default function OngoingBooking({ navigation, route }) {
                     console.log("ERROR===================", err);
                 } else {
                     setToken(items[0][1])
+                    GetBookingStatus(data?.bookingid?.id, items[0][1])
+                        .then(res => {
+                            setLoading(false)
+                            console.log(res.data[0].bookingstatusid?.name)
+                            if (res.data[0].bookingstatusid?.name === 'BOOKING_ASSIGNED') {
+                                setAssinged(true)
+                            } else if (res.data[0].bookingstatusid?.name === 'TECHNICIAN_REACHED') {
+                                navigation.navigate('CreateQuotation',{data:data})
+                            }
+                            else {
+                                setAssinged(false)
+                            }
+
+                        }).catch(err => {
+                            setLoading(false)
+
+                            console.log("WHY", err.response.data)
+                        })
                 }
             })
-    }
 
-    useEffect(() => {
-        console.log("STATE COULD CHANGE----", data.bookingid?.id)
-        getToken()
 
-        GetBookingStatus(data?.bookingid?.id,token)
-        .then(res=>{
-            if (res.data[0].bookingstatusid?.name === 'BOOKING_ASSIGNED') {
-                setAssinged(true)
-            }else if(res.data[0].bookingstatusid?.name === 'TECHNICIAN_REACHED'){
-                navigation.navigate('CreateQuotation')
-            }
-             else {
-                setAssinged(false)
-            }
 
-        }).catch(err=>{
-            console.log(err)
-        })
 
-        
     }, [])
     const technicianStarted = () => {
+        setLoading(true)
+
         const body = {
-            bookingId:  data.bookingid?.id,
+            bookingId: data.bookingid?.id,
             latitude: loc[0],
             longitude: loc[1]
         }
@@ -143,22 +141,28 @@ export default function OngoingBooking({ navigation, route }) {
 
         StartTechinician(token, body)
             .then(res => {
+                setLoading(false)
+
                 console.log("response----", res.data)
                 if (res.status === 200) {
                     setAssinged(false)
                 }
             }).catch(err => {
+                setLoading(false)
+
                 console.log(err.response.data)
             })
 
     }
 
     const technicianRescheduled = () => {
+        setLoading(true)
+
         const body = {
-            bookingId:  data.bookingid?.id,
-            fromtime:fromDate,
-            totime:toDate,
-            comments:comments,
+            bookingId: data.bookingid?.id,
+            fromTime: fromDate,
+            toTime: toDate,
+            comments: comments,
             latitude: loc[0],
             longitude: loc[1]
         }
@@ -166,30 +170,40 @@ export default function OngoingBooking({ navigation, route }) {
 
         RescheduleBooking(token, body)
             .then(res => {
+                setLoading(true)
+
                 console.log("response----", res.data)
                 if (res.status === 200) {
                     setAssinged(false)
                 }
             }).catch(err => {
+                setLoading(true)
+
                 console.log(err.response.data)
             })
 
     }
 
     const technicianReached = () => {
+        setLoading(true)
+
         const body = {
-            bookingId:  data.bookingid?.id,
+            bookingId: data.bookingid?.id,
             latitude: loc[0],
             longitude: loc[1]
         }
 
         ReachedTechinician(token, body)
             .then(res => {
+                setLoading(false)
+
                 console.log("response----", res.data)
                 if (res.status === 200) {
-                    navigation.navigate('CreateQuotation')
+                    navigation.navigate('CreateQuotation',{data:data})
                 }
             }).catch(err => {
+                setLoading(false)
+
                 console.log(err)
             })
 
@@ -201,11 +215,11 @@ export default function OngoingBooking({ navigation, route }) {
                 <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 5, padding: 20, marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
                         <Text style={{ color: '#4E53C8', fontSize: 18 }}>Booking Details</Text>
-                        <Text style={{ color: '#000000', fontSize: 15, fontWeight: '500', }}>{data?.bookingid?.bookingId}<MaterialCommunityIcons size={17} name='content-copy' color={'#000000'} /></Text>
+                        <Text style={{ color: '#000000', fontSize: 15, fontWeight: '500', }}>{data?.bookingid?.bookingId}<MaterialCommunityIcons size={17} onPress={() => { copyClipboard(data?.bookingid?.bookingId) }} name='content-copy' color={'#000000'} /></Text>
 
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginBottom: 20 }}>
-                        <Button onPress={() => { }}
+                        <Button onPress={() => { openPhone('9090909090') }}
                             style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
                             mode="contained"
                         >
@@ -213,7 +227,7 @@ export default function OngoingBooking({ navigation, route }) {
                         </Button>
 
 
-                        <TouchableOpacity style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
+                        <TouchableOpacity onPress={() => { openMaps(20.272254943108717, 85.78341226189251, getFullAddress(data.bookingid?.address)) }} style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
                             <Text style={{ color: '#05194E', fontSize: 10, fontWeight: '400' }}><MaterialCommunityIcons size={10} name='map-marker' color={'#05194E'} /> GET DIRECTION</Text>
                         </TouchableOpacity>
                     </View>
@@ -257,13 +271,19 @@ export default function OngoingBooking({ navigation, route }) {
 
             </ScrollView>
             {isAssinged ? <Button onPress={() => { technicianStarted() }}
-                style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, marginVertical: 10, alignSelf: 'center', width: '100%' }}
+                disabled={loading}
+                loading={loading}
+                color='#05194E'
+                style={{ borderRadius: 10, paddingVertical: .5, marginVertical: 10, alignSelf: 'center', width: '100%' }}
                 mode="contained"
             >
                 <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Accept And GO</Text>
             </Button> :
                 <Button onPress={() => { technicianReached() }}
-                    style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, marginVertical: 10, alignSelf: 'center', width: '100%' }}
+                    disabled={loading}
+                    loading={loading}
+                    color='#05194E'
+                    style={{ borderRadius: 10, paddingVertical: .5, marginVertical: 10, alignSelf: 'center', width: '100%' }}
                     mode="contained"
                 >
                     <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Reached Location</Text>
@@ -293,8 +313,6 @@ export default function OngoingBooking({ navigation, route }) {
                             <Text style={{ textAlign: 'center', color: '#000000', fontSize: 12, textDecorationLine: 'underline' }}><MaterialCommunityIcons name='calendar-range' size={12} /> More Details</Text>
                         </View>
 
-
-
                         <View><Text style={{ marginVertical: 20, textAlign: 'center', fontSize: 30, color: '#d8d8d8' }}>CALENDAR</Text></View>
 
 
@@ -306,7 +324,7 @@ export default function OngoingBooking({ navigation, route }) {
                                 style={{ height: Dimensions.get('screen').width / 3, backgroundColor: '#ffffff', borderRadius: 10, marginTop: 10, paddingHorizontal: 15, paddingVertical: 10, borderColor: '#d8d8d8', borderWidth: 1 }}
                                 multiline={true}
                                 value={comments}
-                                onChangeText={(text)=>setComments(text)}
+                                onChangeText={(text) => setComments(text)}
                                 textAlignVertical='top'
                                 placeholder='Please write your problem statement here'
                                 placeholderTextColor={'#ddd'} />
@@ -317,13 +335,13 @@ export default function OngoingBooking({ navigation, route }) {
                                         return <BtnGrp
                                             key={index}
                                             index={index}
-                                            onPress={()=>{
+                                            onPress={() => {
                                                 setProblem(index)
                                                 setComments(item.name)
                                             }}
-                                            
+
                                             name={item.name}
-                                            
+
                                             customButtonStyle={{ width: 'auto', borderRadius: 5, marginRight: 5 }}
                                             active={problem === index} />
                                     })
@@ -336,15 +354,18 @@ export default function OngoingBooking({ navigation, route }) {
                         <View style={{ paddingHorizontal: 10 }}>
                             <Text style={{ width: '100%', textAlign: 'left', fontWeight: '600', color: '#000000', fontSize: 15 }}>Are you sure to reschedule?</Text>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginVertical: 15, }}>
-                                <Button onPress={() => { technicianRescheduled()}}
-                                    style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '50%' }}
+                                <Button onPress={() => { technicianRescheduled() }}
+                                    color='#05194E'
+                                    disabled={loading}
+                                    loading={loading}
+                                    style={{ borderRadius: 10, paddingVertical: .5, width: '50%' }}
                                     mode="contained"
                                 >
                                     <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Yes</Text>
                                 </Button>
 
 
-                                <TouchableOpacity onPress={()=>{setModal(false) }} style={{ backgroundColor: '#ffffff', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10, width: '50%' }}>
+                                <TouchableOpacity onPress={() => { setModal(false) }} style={{ backgroundColor: '#ffffff', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10, width: '50%' }}>
                                     <Text style={{ color: '#05194E', fontSize: 20, fontWeight: '400', textDecorationLine: 'underline', textAlign: 'center' }}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
