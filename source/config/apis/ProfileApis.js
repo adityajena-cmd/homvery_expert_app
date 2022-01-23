@@ -32,7 +32,23 @@ const UpdateTechnicianDetails = (userId, token,formData) => {
 };
 
 
+const GetAllLinks = (token) =>{
+  const header = getUserToken(token);
+
+  return axios.get(urlConfig.baseURL + '/settings', header);
+
+}
+
+const GetServiceArea = (token,userId) =>{
+  const header = getUserToken(token);
+
+  return axios.get(urlConfig.baseURL + '/technicianservicesmaps?technicianuser.id='+userId, header);
+
+}
+
 export {
   GetTechnicianDetails ,
-  UpdateTechnicianDetails
+  UpdateTechnicianDetails,
+  GetAllLinks,
+  GetServiceArea
 };

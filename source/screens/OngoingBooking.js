@@ -68,6 +68,7 @@ export default function OngoingBooking({ navigation, route }) {
     const [problem, setProblem] = React.useState(0);
     const [loc, setLoc] = React.useState([]);
     const [token, setToken] = React.useState('');
+    const [userId, setUserId] = React.useState('');
     const [comments, setComments] = React.useState('');
     const [fromDate, setFromDate] = React.useState(null);
     const [toDate, setToDate] = React.useState(null);
@@ -104,14 +105,23 @@ export default function OngoingBooking({ navigation, route }) {
                     console.log("ERROR===================", err);
                 } else {
                     setToken(items[0][1])
+                    setUserId(items[1][1])
                     GetBookingStatus(data?.bookingid?.id, items[0][1])
                         .then(res => {
                             setLoading(false)
                             console.log(res.data[0].bookingstatusid?.name)
                             if (res.data[0].bookingstatusid?.name === 'BOOKING_ASSIGNED') {
                                 setAssinged(true)
-                            } else if (res.data[0].bookingstatusid?.name === 'TECHNICIAN_REACHED') {
-                                navigation.navigate('CreateQuotation',{data:data})
+                            } else if (res.data[0].bookingstatusid?.name === 'QUOTATION_APPROVED') {
+                                navigation.navigate('ShareQuotation', { booking: data, token: items[0][1], user: items[1][1] })
+                            } 
+                            else if (res.data[0].bookingstatusid?.name === 'QUOTATION_REJECTED') {
+                                navigation.navigate('CreateQuotation', { data: data })
+                            }else if (res.data[0].bookingstatusid?.name === 'TECHNICIAN_REACHED') {
+                                navigation.navigate('CreateQuotation', { data: data })
+                            }
+                            else if (res.data[0].bookingstatusid?.name === 'QUOTATION_CREATED') {
+                                navigation.navigate('ShareQuotation', { booking: route?.params?.data, token: items[0][1], user: items[1][1] })
                             }
                             else {
                                 setAssinged(false)
@@ -199,7 +209,7 @@ export default function OngoingBooking({ navigation, route }) {
 
                 console.log("response----", res.data)
                 if (res.status === 200) {
-                    navigation.navigate('CreateQuotation',{data:data})
+                    navigation.navigate('CreateQuotation', { data: data })
                 }
             }).catch(err => {
                 setLoading(false)

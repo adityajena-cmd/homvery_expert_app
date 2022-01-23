@@ -7,6 +7,10 @@ const openPhone = phoneNumber => {
 
 }
 
+const openBrowser = (link) =>{
+    Linking.openURL(link)
+}
+
 const getDate = (date) => {
     let dates;
     if (date !== null || date !== undefined || date !== "") {
@@ -52,5 +56,6 @@ export {
     copyClipboard,
     openPhone,
     openMaps,
-    getDate
+    getDate,
+    openBrowser
 }

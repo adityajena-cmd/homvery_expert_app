@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Dimensions, Alert, NativeModules } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { getFocusedRouteNameFromRoute, useNavigation, useRoute } from '@react-navigation/native';
@@ -21,7 +21,8 @@ import ShareQuotation from '../screens/ShareQuotation';
 import CreateQuotation from '../screens/CreateQuotation';
 import ServiceComplete from '../screens/ServiceComplete';
 import WalletDetails from '../screens/WalletDetails';
-import { GetTechnicianDetails, UpdateTechnicianDetails } from '../config/apis/ProfileApis';
+import { GetAllLinks, GetTechnicianDetails, UpdateTechnicianDetails } from '../config/apis/ProfileApis';
+import { openBrowser } from '../config/Utils';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createMaterialBottomTabNavigator();
@@ -88,6 +89,8 @@ const AuthNavigator = () => {
   const [detailId, setDetailId] = React.useState('');
   const [token, setToken] = React.useState('');
   const [modal, setModal] = React.useState(false);
+  const [links, setLinks] = React.useState({});
+
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -100,6 +103,7 @@ const AuthNavigator = () => {
           console.log("AUTHNAV----------------------", items)
           setToken(items[0][1])
           setDetailId(items[1][1])
+
           GetTechnicianDetails(items[2][1], items[0][1])
             .then(res => {
               if (res.status === 200) {
@@ -109,6 +113,15 @@ const AuthNavigator = () => {
               }
             }).catch(err => {
               console.log(err)
+            })
+
+            GetAllLinks(items[0][1])
+            .then(res=>{
+              if(res.status === 200){
+                setLinks(res.data[0])
+              }
+            }).catch(err=>{
+              console.log(error)
             })
         }
       }
@@ -130,6 +143,45 @@ const AuthNavigator = () => {
       })
 
 
+  }
+
+  // const removeAppKeys = async () => {
+  //   let keys = []
+  //   try {
+  //     keys = await AsyncStorage.getAllKeys()
+  //     console.log(`Keys: ${keys}`) // Just to see what's going on
+  //     await AsyncStorage.multiRemove(keys)
+  //     navigation.replace('Login')
+  //   } catch(e) {
+  //    console.log(e)
+  //   }
+  //   console.log('Done')
+  // }
+
+  const logout =()=>{
+    return Alert.alert(
+      "Log Out?",
+      "Are you sure you want to Logout?",
+      [
+        // The "Yes" button
+        {
+          text: "Yes",
+          onPress: () => {
+            
+            AsyncStorage.clear()
+            .then(() => {
+              NativeModules.DevSettings.reload();
+            })
+            .catch(err => console.log("CLEAR",err));
+          },
+        },
+        // The "No" button
+        // Does nothing but dismiss the dialog when tapped
+        {
+          text: "No",
+        },
+      ]
+    );
   }
 
   return (
@@ -288,11 +340,11 @@ const AuthNavigator = () => {
           width: Dimensions.get('screen').width / 1.5
         }}>
           <Image source={require('../assets/images/sidebarBG.png')} style={{ width :Dimensions.get('screen').width / 1.5,height:170}} />
-          <Text style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10 }}>Contact Us</Text>
-          <Text style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10 }}>Refer Friend</Text>
-          <Text style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10 }}>Guidelines</Text>
-          <Text style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10 }}>Terms & Condition</Text>
-          <Text style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10 }}>Logout <MaterialCommunityIcons size={24} name='power' /></Text>
+          <Text onPress={()=>{openBrowser(links?.contactusUrl)}}  style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Contact Us</Text>
+          <Text onPress={()=>{openBrowser(links?.referUrl)}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Refer Friend</Text>
+          <Text onPress={()=>{openBrowser(links?.guidelinesUrl)}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Guidelines</Text>
+          <Text onPress={()=>{openBrowser(links?.termsUrl)}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Terms & Condition</Text>
+          <Text onPress={()=>{logout()}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Logout <MaterialCommunityIcons size={24} name='power' /></Text>
         </View>
       </Modal>
     </>

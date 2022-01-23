@@ -12,7 +12,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import OngoingBooking from './OngoingBooking';
 import moment from 'moment';
 import { add } from 'react-native-reanimated';
-import { getFullAddress } from '../config/Utils';
+import { getFullAddress, openBrowser } from '../config/Utils';
 
 
 
@@ -68,7 +68,9 @@ function Screen1({ navigation, data, onRefresh, isRefresh }) {
                             })
 
                         ) :
-                        <></>
+                        <>
+                            <Text style={{ textAlign: 'center', marginTop: 30, fontSize: 22, fontWeight: '600' }}>No New Bookings Yet.
+                            </Text></>
                 }
 
 
@@ -125,7 +127,7 @@ function Screen2({ navigation, data, onRefresh, isRefresh }) {
                             })
 
                         ) :
-                        <></>
+                        <><Text style={{ textAlign: 'center', marginTop: 30, fontSize: 22, fontWeight: '600' }}>No Bookings Yet.</Text></>
                 }
             </ScrollView>
         </View>
@@ -216,7 +218,8 @@ function Screen3({ navigation, data, onRefresh, isRefresh }) {
                                 )
                             }
                         })
-                        : <></>
+                        : <><Text style={{ textAlign: 'center', marginTop: 30, fontSize: 22, fontWeight: '600' }}>No Bookings Finished Yet.
+                        </Text></>
                 }
 
 
@@ -229,11 +232,13 @@ export default function ExpertBookings({ navigation }) {
     const width = Dimensions.get('screen').width;
     const [modal, setModal] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [load, setLoad] = React.useState(0);
     const [value, setValue] = React.useState(2);
     const [userId, setUserId] = React.useState('');
     const [token, setToken] = React.useState('');
     const [balance, setBalance] = React.useState(0);
     const [isRefresh, setRefresh] = React.useState(false);
+    const [wallet, setWallet] = React.useState({});
 
     const [ongoingBookings, setOngoingBookings] = useState([])
     const [newBookings, setNewBookings] = useState([])
@@ -242,21 +247,7 @@ export default function ExpertBookings({ navigation }) {
 
 
     const onRefresh = () => {
-        setRefresh(true);
-        GetAllBookings(userId, token)
-            .then(res => {
-                setLoading(false)
-                console.log("working")
-                setRefresh(false);
-                if (res.status === 200) {
-                    getBookingData(res.data)
-                }
-
-            }).catch(err => {
-                setLoading(false)
-                setRefresh(false);
-                console.log("err++++++++++++", err)
-            })
+       setLoad(load+1)
     }
 
     function completedBook(item) {
@@ -302,6 +293,7 @@ export default function ExpertBookings({ navigation }) {
                     GetWalletDetails(items[1][1], items[0][1])
                         .then(res => {
                             if (res.status === 200) {
+                                setWallet(res.data[0])
                                 setBalance(res.data[0].amount)
                             } else {
                                 setBalance(0)
@@ -314,7 +306,15 @@ export default function ExpertBookings({ navigation }) {
                             setLoading(false)
                             setRefresh(false);
                             if (res.status === 200) {
-                                getBookingData(res.data)
+                                let data = res.data;
+                                let bookings = []
+                                data.forEach(item => {
+                                    let findItem = bookings.find((x) => x.bookingid.id === item.bookingid.id);
+                                    if (!findItem) {
+                                        bookings.push(item)
+                                    }
+                                })
+                                getBookingData(bookings)
                             }
 
                         }).catch(err => {
@@ -325,7 +325,7 @@ export default function ExpertBookings({ navigation }) {
                 }
             }
         )
-    }, [])
+    }, [load])
     const getWalletBG = (balance) => {
         if (balance >= 5000) {
             return require('../assets/images/walletGreenBG.png')
@@ -350,7 +350,7 @@ export default function ExpertBookings({ navigation }) {
                 }}
             />
 
-            <TouchableOpacity style={{ position: 'absolute', zIndex: 99, elevation: 5, width: Dimensions.get('screen').width / 7, height: Dimensions.get('screen').width / 7, backgroundColor: '#4E53C8', borderRadius: 1000, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', bottom: 20, right: 20 }}>
+            <TouchableOpacity onPress={ ()=>{openBrowser('http://35.84.108.178:3000/contactus')}} style={{ position: 'absolute', zIndex: 99, elevation: 5, width: Dimensions.get('screen').width / 7, height: Dimensions.get('screen').width / 7, backgroundColor: '#4E53C8', borderRadius: 1000, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', bottom: 20, right: 20 }}>
                 <Icon name="call" size={Dimensions.get('screen').width / 15} color={'#ffffff'} />
             </TouchableOpacity>
             <ImageBackground source={getWalletBG(balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15 }}>
@@ -358,7 +358,10 @@ export default function ExpertBookings({ navigation }) {
                     <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('WalletDetails', {
-                            balance: balance
+                            balance: balance,
+                            modal:false,
+                            data:wallet,
+                            user:userId
                         })
                     }}><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
                 </View>
@@ -367,12 +370,24 @@ export default function ExpertBookings({ navigation }) {
                     <Text style={{ color: '#ffffff', fontSize: 40, fontWeight: '600', marginLeft: 10 }}>{balance}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
-                    <Button onPress={() => { setModal(true) }}
+                    <Button onPress={() => { navigation.navigate('WalletDetails', {
+                            balance: balance,
+                            modal:true,
+                            data:wallet,
+                            type:"Recharge",
+                            user:userId
+                        }) }}
                         style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
                         mode="contained">
                         <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Recharge</Text>
                     </Button>
-                    <TouchableOpacity style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
+                    <TouchableOpacity onPress={()=>{navigation.navigate('WalletDetails', {
+                            balance: balance,
+                            data:wallet,
+                            modal:true,
+                            type:"withdraw",
+                            user:userId
+                        })}} style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
                         <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '400' }}>WITHDRAW</Text>
                     </TouchableOpacity>
                 </View>
@@ -386,8 +401,7 @@ export default function ExpertBookings({ navigation }) {
                     tabBarActiveTintColor: '#4E53C8',
                     tabBarInactiveTintColor: '#000000',
                     tabBarIndicatorStyle: { backgroundColor: '#4E53C8' }
-                }}
-            >
+                }}>
                 <Tab.Screen name="New" children={() => <Screen1 navigation={navigation} data={newBookings} onRefresh={onRefresh} isRefresh={isRefresh} />} />
                 <Tab.Screen name="Ongoing" children={() => <Screen2 navigation={navigation} data={ongoingBookings} onRefresh={onRefresh} isRefresh={isRefresh} />} />
                 <Tab.Screen name="Complete" children={() => <Screen3 navigation={navigation} data={completedBookings} onRefresh={onRefresh} isRefresh={isRefresh} />} />

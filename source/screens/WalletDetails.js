@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ImageBackground, TouchableOpacity, Dimensions, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, Image, ImageBackground, TouchableOpacity, Dimensions, ScrollView, RefreshControl, ToastAndroid } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modal from 'react-native-modal'
@@ -7,23 +7,151 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GetWalletTransaction } from '../config/apis/BookingApis';
 import moment from 'moment';
+import uuid from 'uuid-random';
+import { CreateTransaction, GetTaxToken, UpdateWallet, WithDrawCoin } from '../config/apis/TransactionAPI';
+import urlConfig from '../config/config.json';
+import AllInOneSDKManager from 'paytm_allinone_react-native';
+
 
 
 
 export default function WalletDetails({ navigation, route }) {
   const width = Dimensions.get('screen').width;
-  const [modal, setModal] = React.useState(false);
-  const [value, setValue] = React.useState(4);
+  const [modal, setModal] = React.useState(route?.params?.modal);
+  const [value, setValue] = React.useState(1);
   const [transactions, setTransactions] = React.useState([]);
   const [isRefresh, setRefresh] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [load, setLoad] = React.useState(0);
-
+  const [token, setToken] = React.useState('');
+  const [type, setType] = React.useState(route.params?.type ? route.params?.type : '');
+  let userId = route.params?.user
   const [balance, setBalance] = useState(route?.params?.balance)
+  const [wallet, setWallet] = React.useState(route?.params?.data);
+
+  const updateBalance = (amount) => {
+    const walletObject = {
+      type: wallet.type,
+      amount: wallet.amount + parseInt(amount),
+      user: userId,
+    };
+    UpdateWallet(token, wallet.id, walletObject)
+      .then(res => {
+        setLoading(false)
+        console.log(res.data)
+        if(res.status === 200){
+          setLoad(load + 1)
+          setModal(false)
+        }
+      }).catch(err => {
+        setLoading(false)
+        console.log(err)
+
+      })
+  }
+
+
+  const updateTransaction = (amount) => {
+    setLoading(true)
+    const transactionObj = {
+      wallet: wallet.id,
+      createdby: userId,
+      type: 'DEPOSIT',
+      amount: amount,
+      details: 'Amount added to wallet',
+    };
+    CreateTransaction(token, transactionObj)
+      .then(res => {
+        console.log(res.data)
+        if (res.status === 200) {
+          updateBalance(amount)
+        }
+      }).catch(err => {
+        setLoading(false)
+        console.log(err)
+
+      })
+  }
+
+  const IntiateTransaction = (amount) => {
+
+    if (type === "Recharge") {
+      let OrderID = userId + uuid().substring(0, 10) + 'Recharge';
+      setLoading(true)
+      GetTaxToken(OrderID, 1, userId)
+        .then(res => {
+          console.log("TRANSACTION", res.data.body.txnToken)
+          let paytmPayload = {
+            orderId: OrderID,
+            mid: 'uHnuRf08065935005565',
+            txnToken: res.data.body.txnToken,
+            amount: '1',
+            callbackUrl: 'https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=' + OrderID,
+            isStaging: false,
+            restrictAppInvoke: false
+
+          }
+          AllInOneSDKManager.startTransaction(
+            paytmPayload.orderId,
+            paytmPayload.mid,
+            paytmPayload.txnToken,
+            paytmPayload.amount,
+            paytmPayload.callbackUrl,
+            paytmPayload.isStaging,
+            paytmPayload.restrictAppInvoke
+          )
+            .then((result) => {
+              console.log("result", result);
+              setLoading(false)
+              // handle result ..
+              if (result.STATUS === 'TXN_SUCCESS') {
+                ToastAndroid.show('Transaction Succesfull!', ToastAndroid.SHORT);
+                updateTransaction(amount)
+              } else if (result.STATUS === 'TXN_SUCCESS') {
+                ToastAndroid.show('Transaction Failed!', ToastAndroid.SHORT);
+              }
+              else {
+                ToastAndroid.show('Some Error OCcured !\nTry Again.', ToastAndroid.SHORT);
+              }
+            })
+            .catch((err) => {
+              // handle error ..
+              alert("Some Error OCcured !\nTry Again.")
+              console.log(err)
+            });
+        }).catch(err => {
+          console.log("TRANSACTION====ERR", err)
+          setLoading(false)
+          ToastAndroid.show('Recharge Cancelled!', ToastAndroid.SHORT);
+
+        })
+    } else {
+      setLoading(true)
+      let body = {
+        coins: amount
+      }
+      WithDrawCoin(token, body)
+        .then(res => {
+          setLoading(false)
+          console.log(res.data)
+          if(res.status === 200){
+            setLoad(load+1)
+          }
+        }).catch(err => {
+          setLoading(false)
+          console.log(err.response.data)
+
+        })
+    }
+
+  }
+
+
 
 
   const onRefresh = () => {
-    setLoad(load+1)
-}
+    setLoad(load + 1)
+  }
 
   useEffect(() => {
     setRefresh(true)
@@ -35,6 +163,7 @@ export default function WalletDetails({ navigation, route }) {
         if (err) {
           console.warn(err);
         } else {
+          setToken(items[0][1])
           GetWalletTransaction(items[1][1], items[0][1])
             .then(res => {
               setRefresh(false)
@@ -54,7 +183,7 @@ export default function WalletDetails({ navigation, route }) {
             })
         }
       })
-  }, [route?.params?.balance,load])
+  }, [route?.params?.balance, load])
 
   const getWalletBG = (balance) => {
     if (balance >= 5000) {
@@ -77,12 +206,12 @@ export default function WalletDetails({ navigation, route }) {
           <Text style={{ color: '#ffffff', fontSize: 40, fontWeight: '600', marginLeft: 10 }}>{balance}</Text>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
-          <Button onPress={() => { setModal(true) }}
+          <Button onPress={() => { setType("Recharge"); setModal(true) }}
             style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
             mode="contained">
             <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Recharge</Text>
           </Button>
-          <TouchableOpacity style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
+          <TouchableOpacity onPress={() => { setType("Withdraw"); setModal(true) }} style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
             <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '400' }}>WITHDRAW</Text>
           </TouchableOpacity>
         </View>
@@ -103,7 +232,7 @@ export default function WalletDetails({ navigation, route }) {
                   <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
                     <Image source={require('../assets/images/wdr.png')} />
                     <View style={{ flex: 1, paddingLeft: 10 }}>
-                      <Text style={{ color: '#000000', fontSize: 15 }}>Amount Deducted</Text>
+                      <Text style={{ color: '#000000', fontSize: 15 }}>{item?.details ?item?.details:'Amount Withdrawn'}</Text>
                       <Text style={{ color: '#707070', fontSize: 13 }}>{moment(new Date(item?.created_at)).format('Do MMM YYYY')}</Text>
                     </View>
                     <View>
@@ -116,7 +245,7 @@ export default function WalletDetails({ navigation, route }) {
                   <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
                     <Image source={require('../assets/images/wdg.png')} />
                     <View style={{ flex: 1, paddingLeft: 10 }}>
-                      <Text style={{ color: '#000000', fontSize: 15 }}>Amount added to wallet</Text>
+                      <Text style={{ color: '#000000', fontSize: 15 }}>{item?.details ?item?.details:'Amount Added'}</Text>
                       <Text style={{ color: '#707070', fontSize: 13 }}>{moment(new Date(item?.created_at)).format('Do MMM YYYY')}</Text>
                     </View>
                     <View>
@@ -127,10 +256,6 @@ export default function WalletDetails({ navigation, route }) {
             }) : <></>
 
           }
-
-
-
-
         </View>
       </ScrollView>
       <Modal
@@ -139,9 +264,8 @@ export default function WalletDetails({ navigation, route }) {
         backdropOpacity={0.3}
         backdropColor={"#000000"}
         animationType="fadeIn"
-        swipeDirection={['down', "up", "left", "right"]}
+        swipeDirection={['down']}
         onSwipeComplete={() => { setModal(false) }}
-        onBackdropPress={() => { setModal(false) }}
         style={{ margin: 30, justifyContent: "center", }}>
         <View style={{ backgroundColor: '#ffffff', paddingHorizontal: 20, paddingVertical: 20, borderRadius: 15, display: 'flex', alignContent: 'center', alignItems: 'center', }}>
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
@@ -186,10 +310,13 @@ export default function WalletDetails({ navigation, route }) {
             <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15, marginTop: 10 }}>Amount</Text>
             <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 40, marginVertical: 10 }}>₹{value * 500 * .18 + (value * 500)}</Text>
 
-            <Button onPress={() => { setModal(false) }}
-              style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '60%', alignSelf: 'center' }}
+            <Button onPress={() => { IntiateTransaction(value * 500) }}
+              color='#05194E'
+              loading={loading}
+              disabled={loading}
+              style={{ borderRadius: 10, paddingVertical: .5, width: '80%', alignSelf: 'center' }}
               mode="contained">
-              <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Buy {value * 500} coins</Text>
+              <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>{type ? type.toUpperCase() + " " + (value * 500) + ' coins' : ""}</Text>
             </Button>
           </View>
         </View>

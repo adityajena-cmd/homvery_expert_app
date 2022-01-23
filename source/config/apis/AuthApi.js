@@ -12,6 +12,7 @@ const validateOtp = (body) => {
     return axios.post(urlConfig.baseURL + '/auth/validate', body);
   };
 
+
   export {
     loginTechinician as Login,
     validateOtp as CheckOTP

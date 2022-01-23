@@ -21,7 +21,7 @@ const getUserToken = (token,isMultipart=false) => {
 const GetAllBookings = (userId, token) => {
     const header = getUserToken(token);
 
-    return axios.get(urlConfig.baseURL + '/bookingstatusmaps?bookingid.assignedto=' + userId, header);
+    return axios.get(urlConfig.baseURL + `/bookingstatusmaps?bookingid.assignedto=${userId}&_sort=created_at:DESC`, header);
 };
 
 const GetBookingStatus = (bookingId, token) => {
@@ -78,6 +78,17 @@ const GetInventory = ( token,keyword) => {
   return axios.get(urlConfig.baseURL + '/inventories?item_name_contains='+keyword, header);
 };
 
+const GetBillingDetails = ( token,bookingId) => {
+  const header = getUserToken(token);
+
+  return axios.get(urlConfig.baseURL + '/billingdetails?bookingId='+bookingId, header);
+};
+const CompleteBooking = ( token,body) => {
+  const header = getUserToken(token);
+
+  return axios.put(urlConfig.baseURL + '/booking/completeBooking',body, header);
+};
+
 
 
 
@@ -93,5 +104,7 @@ export {
   RevisitTechinician,
   GetBookingStatus,
   GetInventory,
+  GetBillingDetails,
+  CompleteBooking,
   ShareQuotation as CreateNewQuotation
 };

@@ -10,12 +10,15 @@ import { requestLocationPermission } from '../config/LocaitonProvider';
 import Geolocation from '@react-native-community/geolocation';
 import { GetInventory } from '../config/apis/BookingApis';
 import uuid from 'uuid-random';
+import { parse } from '@babel/core';
 
 
 const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
 
 
     const [qty, setqty] = useState(1);
+    const [priceText, setPriceText] = useState(item.item_price.toString());
+    useEffect(() => { setPriceText(item.item_price.toString())}, [item] )
     console.log(item)
     return (
 
@@ -37,17 +40,17 @@ const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
                     </TouchableOpacity>
                 </View>
                 <View style={{ width: '100%' }}>
-                    <Text style={{ color: '#4E53C8', textAlign: 'left', fontSize: 18 }}>Item Name</Text>
+                    <Text style={{ color: '#4E53C8', textAlign: 'left', fontSize: 18 }}>{item?.item_name}</Text>
                     <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                         <Text style={{ color: '#000000', textAlign: 'left', fontSize: 18 }}>Price</Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#4E53C8', textAlign: 'left', fontSize: 30 }}>₹</Text>
-                            <TextInput value={item?.item_price?.toString()} style={{ textAlign: 'center', minWidth: 70, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }} />
+                            <TextInput keyboardType='numeric' onChangeText={(text) => { setPriceText(text) }} value={priceText} style={{ textAlign: 'center', minWidth: 70, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }} />
                         </View>
                     </View>
-                    <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                    {item?.item_type !== 'SERVICECHARGE' &&  <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />}
+                    {item?.item_type !== 'SERVICECHARGE' && <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                         <Text style={{ color: '#000000', textAlign: 'left', fontSize: 18 }}>Unit</Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
 
@@ -63,7 +66,7 @@ const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
                                 <MaterialCommunityIcons name="plus" size={20} color={'#4E53C8'} />
                             </TouchableOpacity>
                         </View>
-                    </View>
+                    </View>}
                     <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginVertical: 30 }}>
                         <TouchableOpacity onPress={() => { setModal(false) }} style={{ width: '45%', backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
@@ -71,7 +74,7 @@ const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
                         </TouchableOpacity>
                         <Button onPress={() => {
                             setqty(1)
-                            onModalSubmit(qty, item)
+                            onModalSubmit(qty, parseInt(priceText), item)
                         }}
 
                             color='#05194E'
@@ -92,7 +95,7 @@ const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
 
 
 
-export default function CreateQuotation({ navigation ,route}) {
+export default function CreateQuotation({ navigation, route }) {
     const [value, setValue] = React.useState(1);
     const [modal, setModal] = React.useState(false)
     const [token, setToken] = React.useState('')
@@ -112,7 +115,7 @@ export default function CreateQuotation({ navigation ,route}) {
         if (quotationList.length > 0) {
 
             quotationList.forEach(item => {
-                total = total + parseInt(item.item_price);
+                total = total + (parseInt(item.item_price) * item.item_unit);
             })
         } else {
             total = 0
@@ -137,10 +140,10 @@ export default function CreateQuotation({ navigation ,route}) {
 
 
     }, [searchText])
-    const onModalSubmit = (qty, item) => {
+    const onModalSubmit = (qty, price, item) => {
         let data = {
             key: uuid().substring(0, 14),
-            item_price: item.item_price * qty,
+            item_price: price,
             item_unit: qty,
             item_name: item.item_name,
             item_description: item.item_description,
@@ -247,7 +250,7 @@ export default function CreateQuotation({ navigation ,route}) {
                                 </View>
                                 <View style={{ marginTop: 10 }}>
 
-                                    <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>{'₹ ' + item.item_price}</Text>
+                                    <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>{'₹ ' + (parseInt(item.item_price) * item.item_unit).toString()}</Text>
                                 </View>
                             </View>)
                     })}
@@ -266,9 +269,9 @@ export default function CreateQuotation({ navigation ,route}) {
                 </View>
             </ScrollView>
 
-            <Button onPress={() => { navigation.navigate('ShareQuotation',{booking:route?.params.data,token:token,user:userId,data:quotationList,total:totalPrice}) }}
+            <Button onPress={() => { navigation.navigate('ShareQuotation', { booking: route?.params.data, token: token, user: userId, data: quotationList, total: totalPrice }) }}
                 color='#05194E'
-                
+
                 style={{ borderRadius: 10, paddingVertical: .5, marginVertical: 30, alignSelf: 'center', width: '100%' }}
                 mode="contained"
             >

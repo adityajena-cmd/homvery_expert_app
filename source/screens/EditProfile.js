@@ -55,7 +55,7 @@ export default function PersonalDetails({ route }) {
         <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ paddingHorizontal: 20, paddingTop: 10, }}>
-                    <Image source={require('../assets/images/EP.png')} style={{ width: width * 0.5, height: width * 0.5, marginBottom: 10, alignSelf: 'center' }} />
+                    <Image source={profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } :require('../assets/images/EP.png')} style={{ width: width * 0.5, height: width * 0.5, marginBottom: 10, alignSelf: 'center' }} />
                     <View style={{ flexDirection: 'row' }}>
                         <View style={{ paddingRight: 10, flex: 1 }}>
                             <FormTextInput value={profile.technician && profile.technician?.firstname} label="First Name" placeholder="First Name" editable={false} />
