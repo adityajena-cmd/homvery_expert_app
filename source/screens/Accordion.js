@@ -1,4 +1,4 @@
-import { TouchableOpacity, View ,Image, Dimensions, Text} from 'react-native';
+import { TouchableOpacity, View, Image, Dimensions, Text, ToastAndroid } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { copyClipboard, getFullAddress, openMaps, openPhone } from '../config/Utils';
 import moment from 'moment';
@@ -25,7 +25,7 @@ export const Accord = ({ data }) => {
                 accordion &&
                 <>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginBottom: 20, marginTop: 15, paddingTop: 10, borderTopColor: '#EAE2E2', borderTopWidth: 1 }}>
-                        <Button onPress={() => { openPhone('9090909090') }}
+                        <Button onPress={() => { openPhone(data?.bookingid?.address?.phoneNumber) }}
                             style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
                             mode="contained"
                         >
@@ -33,7 +33,10 @@ export const Accord = ({ data }) => {
                         </Button>
 
 
-                        <TouchableOpacity onPress={() => { openMaps(20.272254943108717, 85.78341226189251, getFullAddress(data.bookingid?.address)) }} style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
+                        <TouchableOpacity onPress={() => {
+                            data?.bookingid?.address?.latitude ? openMaps(data?.bookingid?.address?.latitude, data?.bookingid?.address?.latitude, getFullAddress(data.bookingid?.address)) :
+                            ToastAndroid.show('Locaiton Not Provide!', ToastAndroid.SHORT);
+                        }} style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 8.5, paddingHorizontal: 10, marginLeft: 10 }}>
                             <Text style={{ color: '#05194E', fontSize: 13, fontWeight: '400' }}><MaterialCommunityIcons size={13} name='map-marker' color={'#05194E'} /> GET DIRECTION</Text>
                         </TouchableOpacity>
                     </View>

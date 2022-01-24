@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react'
 import { View, Text, Image, Dimensions } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GetLocation, requestLocationPermission } from '../config/LocaitonProvider';
+import { GetLocation, requestLocationPermission,requestCameraPermisiion, requestStoragePermisiion } from '../config/LocaitonProvider';
 
 const Splash = ({ navigation }) => {
     useEffect(() => {
         requestLocationPermission()
+        requestCameraPermisiion()
+        requestStoragePermisiion()
+
         setTimeout(() => {
             AsyncStorage.multiGet(
                 ['API_TOKEN', 'USER_ID','ON_BOARD'],

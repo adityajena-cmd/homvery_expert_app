@@ -13,6 +13,7 @@ import OngoingBooking from './OngoingBooking';
 import moment from 'moment';
 import { add } from 'react-native-reanimated';
 import { getFullAddress, openBrowser } from '../config/Utils';
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
 
 
 
@@ -247,7 +248,7 @@ export default function ExpertBookings({ navigation }) {
 
 
     const onRefresh = () => {
-       setLoad(load+1)
+        setLoad(load + 1)
     }
 
     function completedBook(item) {
@@ -256,7 +257,7 @@ export default function ExpertBookings({ navigation }) {
         }
     }
     function newBook(item) {
-        if (item.bookingstatusid?.name === 'BOOKING_ASSIGNED') {
+        if (item.bookingstatusid?.name === 'BOOKING_ASSIGNED' || item.bookingstatusid?.name === 'BOOKING_RESCHEDULED') {
             return item;
         }
     }
@@ -276,56 +277,79 @@ export default function ExpertBookings({ navigation }) {
         setCompletedBookings(completedBooking)
         setOngoingBookings(ongoingBooking)
     }
+    const resetAction = CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Splash' }],
+    });
+    const logout = () => {
+        AsyncStorage.clear()
+            .then(() => {
+                navigation.dispatch(resetAction)
+            })
+            .catch(err => console.log("CLEAR", err));
+    }
 
 
-    useEffect(() => {
-        setRefresh(true);
-        AsyncStorage.multiGet(
-            ['API_TOKEN', 'USER_ID'],
-            (err, items) => {
-                if (err) {
-                    console.log("ERROR===================", err);
-                } else {
+    useFocusEffect(
+        React.useCallback(() => {
+            setRefresh(true);
+            AsyncStorage.multiGet(
+                ['API_TOKEN', 'USER_ID'],
+                (err, items) => {
+                    if (err) {
+                        console.log("ERROR===================", err);
+                    } else {
 
-                    setToken(items[0][1])
-                    setUserId(items[1][1])
-                    setLoading(true)
-                    GetWalletDetails(items[1][1], items[0][1])
-                        .then(res => {
-                            if (res.status === 200) {
-                                setWallet(res.data[0])
-                                setBalance(res.data[0].amount)
-                            } else {
-                                setBalance(0)
-                            }
-                        }).catch(err => {
+                        setToken(items[0][1])
+                        setUserId(items[1][1])
+                        setLoading(true)
+                        GetWalletDetails(items[1][1], items[0][1])
+                            .then(res => {
+                                if (res.status === 200) {
+                                    setWallet(res.data[0])
+                                    setBalance(res.data[0].amount)
+                                } else {
+                                    setBalance(0)
+                                }
+                            }).catch(err => {
+                                if (err.response.status === 403) {
+                                    logout()
+                                } else {
+                                    console.log(err)
+                                }
 
-                        })
-                    GetAllBookings(items[1][1], items[0][1])
-                        .then(res => {
-                            setLoading(false)
-                            setRefresh(false);
-                            if (res.status === 200) {
-                                let data = res.data;
-                                let bookings = []
-                                data.forEach(item => {
-                                    let findItem = bookings.find((x) => x.bookingid.id === item.bookingid.id);
-                                    if (!findItem) {
-                                        bookings.push(item)
-                                    }
-                                })
-                                getBookingData(bookings)
-                            }
 
-                        }).catch(err => {
-                            setLoading(false)
-                            setRefresh(false);
-                            console.log("err++++++++++++", err)
-                        })
+                            })
+                        GetAllBookings(items[1][1], items[0][1])
+                            .then(res => {
+                                setLoading(false)
+                                setRefresh(false);
+                                if (res.status === 200) {
+                                    let data = res.data;
+                                    let bookings = []
+                                    data.forEach(item => {
+                                        let findItem = bookings.find((x) => x.bookingid.id === item.bookingid.id);
+                                        if (!findItem) {
+                                            bookings.push(item)
+                                        }
+                                    })
+                                    getBookingData(bookings)
+                                }
+
+                            }).catch(err => {
+                                setLoading(false)
+                                setRefresh(false);
+                                console.log("err++++++++++++", err)
+                                if (err.response.status === 403) {
+                                    logout()
+                                } else {
+                                    console.log(err)
+                                }
+                            })
+                    }
                 }
-            }
-        )
-    }, [load])
+            )
+        }, [load]))
     const getWalletBG = (balance) => {
         if (balance >= 5000) {
             return require('../assets/images/walletGreenBG.png')
@@ -350,7 +374,7 @@ export default function ExpertBookings({ navigation }) {
                 }}
             />
 
-            <TouchableOpacity onPress={ ()=>{openBrowser('http://35.84.108.178:3000/contactus')}} style={{ position: 'absolute', zIndex: 99, elevation: 5, width: Dimensions.get('screen').width / 7, height: Dimensions.get('screen').width / 7, backgroundColor: '#4E53C8', borderRadius: 1000, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', bottom: 20, right: 20 }}>
+            <TouchableOpacity onPress={() => { openBrowser('http://35.84.108.178:3000/contactus') }} style={{ position: 'absolute', zIndex: 99, elevation: 5, width: Dimensions.get('screen').width / 7, height: Dimensions.get('screen').width / 7, backgroundColor: '#4E53C8', borderRadius: 1000, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center', bottom: 20, right: 20 }}>
                 <Icon name="call" size={Dimensions.get('screen').width / 15} color={'#ffffff'} />
             </TouchableOpacity>
             <ImageBackground source={getWalletBG(balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15 }}>
@@ -359,9 +383,9 @@ export default function ExpertBookings({ navigation }) {
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('WalletDetails', {
                             balance: balance,
-                            modal:false,
-                            data:wallet,
-                            user:userId
+                            modal: false,
+                            data: wallet,
+                            user: userId
                         })
                     }}><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
                 </View>
@@ -370,24 +394,28 @@ export default function ExpertBookings({ navigation }) {
                     <Text style={{ color: '#ffffff', fontSize: 40, fontWeight: '600', marginLeft: 10 }}>{balance}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
-                    <Button onPress={() => { navigation.navigate('WalletDetails', {
+                    <Button onPress={() => {
+                        navigation.navigate('WalletDetails', {
                             balance: balance,
-                            modal:true,
-                            data:wallet,
-                            type:"Recharge",
-                            user:userId
-                        }) }}
+                            modal: true,
+                            data: wallet,
+                            type: "Recharge",
+                            user: userId
+                        })
+                    }}
                         style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
                         mode="contained">
                         <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Recharge</Text>
                     </Button>
-                    <TouchableOpacity onPress={()=>{navigation.navigate('WalletDetails', {
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('WalletDetails', {
                             balance: balance,
-                            data:wallet,
-                            modal:true,
-                            type:"withdraw",
-                            user:userId
-                        })}} style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
+                            data: wallet,
+                            modal: true,
+                            type: "withdraw",
+                            user: userId
+                        })
+                    }} style={{ backgroundColor: '#ffffff00', borderColor: '#ffffff', borderWidth: 1, borderRadius: 10, paddingVertical: 7.5, paddingHorizontal: 10, marginLeft: 10 }}>
                         <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '400' }}>WITHDRAW</Text>
                     </TouchableOpacity>
                 </View>

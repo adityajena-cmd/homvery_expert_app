@@ -7,7 +7,7 @@ const openPhone = phoneNumber => {
 
 }
 
-const openBrowser = (link) =>{
+const openBrowser = (link="www.google.com") =>{
     Linking.openURL(link)
 }
 

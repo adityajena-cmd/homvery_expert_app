@@ -7,7 +7,6 @@ import { GetServiceArea, GetTechnicianDetails } from '../config/apis/ProfileApis
 import { useFocusEffect } from '@react-navigation/native';
 
 
-
 export const StepperStage = ({ stage }) => {
   const width = Dimensions.get('screen').width;
   return (
@@ -40,7 +39,7 @@ export default function ExpertProfile({ navigation }) {
   const [status, setstatus] = useState(1)
   const [token, setToken] = useState('')
   const [userId, setUserId] = useState('')
-  const [services, setServices] = useState({})
+  const [services, setServices] = useState([])
   const [profile, setProfile] = useState({})
 
 
@@ -54,24 +53,29 @@ export default function ExpertProfile({ navigation }) {
         }
       }).catch(err => console.log("lololo", err.response.data))
   }
+  const getCities = (arr) => {
+    let str = ""
+    arr.forEach(i => {
+      str = str + i.city.name + ", "
+    })
+    return str
+  }
   const getServiceAreas = (token, userId) => {
-    GetServiceArea( token,userId)
+    GetServiceArea(token, userId)
       .then(res => {
-        console.log(res.data)
-        if (res.status === 200 &&  res.data.length>0 ) {
-          let services = '';
-          let cities = '';
-          let pincode = '';
-          res.data.forEach(item =>{
-            services = services +  item.service.name+",";
-            cities = cities+item.city.name+",";
-            pincode = pincode+item.pincodes+",";
+        console.log("-----------",res.data)
+        if (res.status === 200 && res.data.length >0) {
+          let entries = []
+          res.data.forEach(item => {
+            let service = {
+              service: item.service.name,
+              cities: getCities(item.service.service_locations),
+              pincode: item.pincodes
+            }
+           
+            entries.push(service)
           })
-          setServices({
-            services:services,
-            pincodes:pincode,
-            cities:cities
-          })
+          setServices(entries)
         }
       }).catch(err => console.log("lololo", err))
   }
@@ -104,7 +108,7 @@ export default function ExpertProfile({ navigation }) {
                 setstatus(0)
                 getTechinician(items[0][1], items[2][1])
                 getServiceAreas(items[0][1], items[2][1])
-                
+
                 break;
               default:
                 setstatus(1)
@@ -205,17 +209,12 @@ export default function ExpertProfile({ navigation }) {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', }}>
 
                 <View style={{ marginTop: 10 }}>
-                  <Text style={{ color: '#000000',fontWeight:'600',marginTop: 20, fontSize: 20 }}>{'ServiceName'}</Text>
-                  <Text style={{ color: '#000000',marginTop: 10, fontSize: 16 }}>{services.services}</Text>
-                  
-                  <Text style={{ color: '#000000',fontWeight:'600',marginTop: 20, fontSize: 20 }}>{'Cities'}</Text>
-                  <Text style={{ color: '#000000',marginTop: 10, fontSize: 16 }}>{services.cities}</Text>
-                  
-                  <Text style={{ color: '#000000',fontWeight:'600',marginTop: 20,fontSize: 20 }}>{'Pincode'}</Text>
-                  <Text style={{ color: '#000000',marginTop: 10, fontSize: 16 ,fontWeight:'600'}}>{services.pincodes}</Text>
-               
+                  {services.length > 0 && services.map(item => {
+                    return <><Text style={{ color: '#000000',textDecorationLine:'underline', fontWeight: '600', marginTop: 30, fontSize: 18 }}>{`${item.service} (`  +item.cities+' )'}</Text>
+                      <Text style={{ color: '#000000', marginTop: 10, fontSize: 16 }}>{"Pincodes: "+item.pincode}</Text></>
+                  })}
                 </View>
-               
+
               </View>
             </View>
           </>

@@ -5,7 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Modal from 'react-native-modal'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GetWalletTransaction } from '../config/apis/BookingApis';
+import { GetWalletDetails, GetWalletTransaction } from '../config/apis/BookingApis';
 import moment from 'moment';
 import uuid from 'uuid-random';
 import { CreateTransaction, GetTaxToken, UpdateWallet, WithDrawCoin } from '../config/apis/TransactionAPI';
@@ -39,7 +39,7 @@ export default function WalletDetails({ navigation, route }) {
       .then(res => {
         setLoading(false)
         console.log(res.data)
-        if(res.status === 200){
+        if (res.status === 200) {
           setLoad(load + 1)
           setModal(false)
         }
@@ -134,8 +134,10 @@ export default function WalletDetails({ navigation, route }) {
         .then(res => {
           setLoading(false)
           console.log(res.data)
-          if(res.status === 200){
-            setLoad(load+1)
+          if (res.status === 200) {
+            ToastAndroid.show(amount + 'Coins Withdrawn!', ToastAndroid.SHORT);
+            setLoad(load + 1)
+            setModal(false)
           }
         }).catch(err => {
           setLoading(false)
@@ -164,6 +166,18 @@ export default function WalletDetails({ navigation, route }) {
           console.warn(err);
         } else {
           setToken(items[0][1])
+          GetWalletDetails(items[1][1], items[0][1])
+            .then(res => {
+              if (res.status === 200) {
+                setWallet(res.data[0])
+                setBalance(res.data[0].amount)
+              } else {
+                setBalance(0)
+              }
+            }).catch(err => {
+              console.log(err)
+
+            })
           GetWalletTransaction(items[1][1], items[0][1])
             .then(res => {
               setRefresh(false)
@@ -196,7 +210,7 @@ export default function WalletDetails({ navigation, route }) {
   }
   return (
     <View style={{ flex: 1, backgroundColor: '#F8F8F8', paddingHorizontal: 10 }}>
-      <ImageBackground source={getWalletBG(route?.params?.balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15, marginTop: 10 }}>
+      <ImageBackground source={getWalletBG(balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15, marginTop: 10 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
           <TouchableOpacity><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
@@ -232,7 +246,7 @@ export default function WalletDetails({ navigation, route }) {
                   <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
                     <Image source={require('../assets/images/wdr.png')} />
                     <View style={{ flex: 1, paddingLeft: 10 }}>
-                      <Text style={{ color: '#000000', fontSize: 15 }}>{item?.details ?item?.details:'Amount Withdrawn'}</Text>
+                      <Text style={{ color: '#000000', fontSize: 15 }}>{item?.details ? item?.details : 'Amount Withdrawn'}</Text>
                       <Text style={{ color: '#707070', fontSize: 13 }}>{moment(new Date(item?.created_at)).format('Do MMM YYYY')}</Text>
                     </View>
                     <View>
@@ -245,7 +259,7 @@ export default function WalletDetails({ navigation, route }) {
                   <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', paddingTop: 5, paddingBottom: 10, marginTop: 5, borderBottomColor: '#DCEBF7', borderBottomWidth: 1 }}>
                     <Image source={require('../assets/images/wdg.png')} />
                     <View style={{ flex: 1, paddingLeft: 10 }}>
-                      <Text style={{ color: '#000000', fontSize: 15 }}>{item?.details ?item?.details:'Amount Added'}</Text>
+                      <Text style={{ color: '#000000', fontSize: 15 }}>{item?.details ? item?.details : 'Amount Added'}</Text>
                       <Text style={{ color: '#707070', fontSize: 13 }}>{moment(new Date(item?.created_at)).format('Do MMM YYYY')}</Text>
                     </View>
                     <View>
@@ -296,19 +310,19 @@ export default function WalletDetails({ navigation, route }) {
 
               </View>
             </View>
-            <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
+            {type === 'Recharge' && <><View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ textAlign: 'left', color: '#707070', fontSize: 15, }}>* 18% GST </Text>
-              <Text style={{ textAlign: 'right', color: '#707070', fontSize: 15, }}>{value * 500 * .18}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ textAlign: 'left', color: '#707070', fontSize: 15, }}>* 18% GST </Text>
+                <Text style={{ textAlign: 'right', color: '#707070', fontSize: 15, }}>{value * 500 * .18}</Text>
 
-            </View>
-
+              </View></>
+            }
             <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
 
 
             <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15, marginTop: 10 }}>Amount</Text>
-            <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 40, marginVertical: 10 }}>₹{value * 500 * .18 + (value * 500)}</Text>
+            <Text style={{ textAlign: 'center', color: '#4E53C8', fontSize: 40, marginVertical: 10 }}>{type === 'Recharge' ? '₹' + (value * 500 * .18 + (value * 500)) : '₹' + (value * 500)}</Text>
 
             <Button onPress={() => { IntiateTransaction(value * 500) }}
               color='#05194E'

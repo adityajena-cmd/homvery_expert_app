@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, Image, Dimensions, TouchableOpacity, TextInput, ToastAndroid } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -110,7 +110,7 @@ export default function OngoingBooking({ navigation, route }) {
                         .then(res => {
                             setLoading(false)
                             console.log(res.data[0].bookingstatusid?.name)
-                            if (res.data[0].bookingstatusid?.name === 'BOOKING_ASSIGNED') {
+                            if (res.data[0].bookingstatusid?.name === 'BOOKING_ASSIGNED' || res.data[0].bookingstatusid?.name === 'BOOKING_RESCHEDULED') {
                                 setAssinged(true)
                             } else if (res.data[0].bookingstatusid?.name === 'QUOTATION_APPROVED') {
                                 navigation.navigate('ShareQuotation', { booking: data, token: items[0][1], user: items[1][1] })
@@ -229,7 +229,7 @@ export default function OngoingBooking({ navigation, route }) {
 
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginBottom: 20 }}>
-                        <Button onPress={() => { openPhone('9090909090') }}
+                        <Button onPress={() => { openPhone(data?.bookingid?.address?.phoneNumber) }}
                             style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5 }}
                             mode="contained"
                         >
@@ -237,7 +237,8 @@ export default function OngoingBooking({ navigation, route }) {
                         </Button>
 
 
-                        <TouchableOpacity onPress={() => { openMaps(20.272254943108717, 85.78341226189251, getFullAddress(data.bookingid?.address)) }} style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
+                        <TouchableOpacity onPress={() => {data?.bookingid?.address?.latitude ? openMaps(data?.bookingid?.address?.latitude, data?.bookingid?.address?.latitude , getFullAddress(data.bookingid?.address)): ToastAndroid.show('Locaiton Not Provide!', ToastAndroid.SHORT); }}
+                         style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 8.5, paddingHorizontal: 10, marginLeft: 10 }}>
                             <Text style={{ color: '#05194E', fontSize: 10, fontWeight: '400' }}><MaterialCommunityIcons size={10} name='map-marker' color={'#05194E'} /> GET DIRECTION</Text>
                         </TouchableOpacity>
                     </View>

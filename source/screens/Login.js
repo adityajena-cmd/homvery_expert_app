@@ -1,11 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, TextInput, ToastAndroid, Image, StatusBar, Dimensions, ScrollView } from 'react-native'
 import { Button } from 'react-native-paper'
 import { Login } from '../config/apis/AuthApi'
+import { openBrowser } from '../config/Utils'
 
 const LoginScreen = ({navigation}) => {
     const [value, setvalue] = useState('9588754120')
     const [loading, setLoading] = useState(false);
+    // const [links, setLinks] = React.useState({});
+
+    // useEffect(() => {
+    //     GetAllLinks(items[0][1])
+    //     .then(res=>{
+    //       if(res.status === 200){
+    //         setLinks(res.data[0])
+    //       }
+    //     }).catch(err=>{
+    //       console.log(error)
+    //     })
+    // }, []);
+    
 
     const getOTP =()=>{
 
@@ -68,7 +82,7 @@ const LoginScreen = ({navigation}) => {
                     ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Request OTP</Text></Button>
 
 
-                    <Button onPress={() => { }}
+                    <Button onPress={() => { openBrowser('https://google.com') }}
                         style={{ marginTop: 50, width: '100%', fontSize: 20, backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 0.5 }}
                         mode="contained"
                     ><Text style={{ color: '#05194E', fontSize: 20, fontWeight: '400' }}>Register as partner</Text></Button>

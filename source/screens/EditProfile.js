@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Dimensions, Image, TextInput } from 'react-native';
+import { View, Text, ScrollView, Dimensions, Image, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
 import { getDate } from '../config/Utils';
+import { launchCamera } from 'react-native-image-picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { UpdateUser, UploadProfile } from '../config/apis/ProfileApis';
+
+
+const options = {
+    mediaType: 'photo',
+    storageOptions: {
+        skipBackup: true,
+        path: 'images',
+    },
+
+}
 
 export const FormTextInput = (props) => {
     const { label, placeholder, ...def } = props;
@@ -26,6 +39,7 @@ export default function PersonalDetails({ route }) {
     const [token, setToken] = useState(route?.params?.token)
     const [userId, setUserId] = useState(route?.params?.user)
     const [profile, setProfile] = useState(route?.params?.data)
+    const [profilesource, setProfileSource] = useState('')
 
     const [day, setDay] = useState(profile && getDate(profile.dob)[2])
     const [month, setmonth] = useState(profile && getDate(profile.dob)[1])
@@ -48,6 +62,78 @@ export default function PersonalDetails({ route }) {
 
     }
 
+    const UploadImage = (doc) => {
+        let formData = new FormData()
+        formData.append('files', doc)
+        UploadProfile(token, formData)
+            .then(res => {
+                if (res.status === 200) {
+                    let userForm = new FormData()
+                    userForm.append('profilepic', res.data[0].id)
+                    UpdateUser(userId, token, userForm)
+                        .then(res => {
+                            ToastAndroid.show('Image Uploaded!', ToastAndroid.SHORT);
+
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                }
+            }).catch(err => {
+                console.log(err)
+
+            })
+    }
+
+    const askForUpload = (doc) => {
+        return Alert.alert(
+            "Upload Image?",
+            "Are you sure you want to Update Profile Pic?",
+            [
+                // The "Yes" button
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        UploadImage(doc)
+
+                    },
+                },
+                // The "No" button
+                // Does nothing but dismiss the dialog when tapped
+                {
+                    text: "No",
+                },
+            ]
+        );
+    }
+
+
+    const addImage = () => {
+        console.log('YH')
+        launchCamera(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+                alert(response.customButton);
+            } else {
+                const source = { uri: response.uri };
+                setProfileSource(source)
+                console.log('response', JSON.stringify(response));
+                const doc = {
+                    name: response.fileName,
+                    type: response.type,
+                    uri:
+                        Platform.OS === 'android' ? response.uri : response.uri.replace('file://', ''),
+                };
+                askForUpload(doc)
+            }
+        });
+    }
+
 
 
     return (
@@ -55,7 +141,10 @@ export default function PersonalDetails({ route }) {
         <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ paddingHorizontal: 20, paddingTop: 10, }}>
-                    <Image source={profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } :require('../assets/images/EP.png')} style={{ width: width * 0.5, height: width * 0.5, marginBottom: 10, alignSelf: 'center' }} />
+                    <Image source={profilesource ? profilesource : profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } : require('../assets/images/EP.png')} style={{ width: width * 0.5, height: width * 0.5, marginBottom: 10, alignSelf: 'center' }} />
+                    <TouchableOpacity onPress={() => { addImage() }}>
+                        <Text style={{ color: '#41C461', fontWeight: '500', marginBottom: 20, fontSize: 15, marginTop: -20, textAlign: 'center' }}><MaterialCommunityIcons size={16} name='pencil' /> Edit</Text>
+                    </TouchableOpacity>
                     <View style={{ flexDirection: 'row' }}>
                         <View style={{ paddingRight: 10, flex: 1 }}>
                             <FormTextInput value={profile.technician && profile.technician?.firstname} label="First Name" placeholder="First Name" editable={false} />

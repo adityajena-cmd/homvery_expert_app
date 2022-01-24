@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Dimensions, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, Dimensions, ScrollView, TextInput, TouchableOpacity, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Button } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -17,8 +17,15 @@ const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
 
 
     const [qty, setqty] = useState(1);
+    console.log(item.item_price)
     const [priceText, setPriceText] = useState(item.item_price.toString());
-    useEffect(() => { setPriceText(item.item_price.toString())}, [item] )
+    useEffect(() => {
+        if (item.item_price !== undefined) {
+            setPriceText(item.item_price.toString())
+
+        }
+    }
+        , [item])
     console.log(item)
     return (
 
@@ -49,7 +56,7 @@ const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
                             <TextInput keyboardType='numeric' onChangeText={(text) => { setPriceText(text) }} value={priceText} style={{ textAlign: 'center', minWidth: 70, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }} />
                         </View>
                     </View>
-                    {item?.item_type !== 'SERVICECHARGE' &&  <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />}
+                    {item?.item_type !== 'SERVICECHARGE' && <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />}
                     {item?.item_type !== 'SERVICECHARGE' && <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                         <Text style={{ color: '#000000', textAlign: 'left', fontSize: 18 }}>Unit</Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
@@ -108,8 +115,8 @@ export default function CreateQuotation({ navigation, route }) {
     const [searchText, setSearchText] = React.useState('')
     const [inventoryList, setInventoryLsit] = React.useState([])
     const [quotationList, setQuotationList] = React.useState([])
-
-
+    let booking = route?.params?.data
+    console.log("SERVICEID-------------------", booking.bookingid.serviceid?.id)
     useEffect(() => {
         let total = 0;
         if (quotationList.length > 0) {
@@ -128,10 +135,14 @@ export default function CreateQuotation({ navigation, route }) {
         if (token === '') {
             getToken()
         } else {
-            GetInventory(token, searchText)
+            GetInventory(token, booking.bookingid.serviceid?.id, searchText)
                 .then(res => {
                     console.log(res.data)
                     setInventoryLsit(res.data)
+                    if (res.data.length < 1) {
+                        ToastAndroid.show('No Item in Inventory!', ToastAndroid.SHORT);
+
+                    }
                 }).catch(err => {
                     console.log(err)
                 })
@@ -172,10 +183,14 @@ export default function CreateQuotation({ navigation, route }) {
                 } else {
                     setToken(items[0][1])
                     setUserId(items[1][1])
-                    GetInventory(items[0][1], searchText)
+                    GetInventory(items[0][1], booking.bookingid.serviceid?.id, searchText)
                         .then(res => {
                             console.log(res.data)
                             setInventoryLsit(res.data)
+                            if (res.data.length < 1) {
+                                ToastAndroid.show('No Item in Inventory!', ToastAndroid.SHORT);
+
+                            }
                         }).catch(err => {
                             console.log(err)
                         })
@@ -185,7 +200,7 @@ export default function CreateQuotation({ navigation, route }) {
 
     return (
         <View style={{ flex: 1, paddingHorizontal: 10, backgroundColor: '#ffffff' }}>
-            <AddInventoryModal item={currentItem} modal={modal} setModal={setModal} onModalSubmit={onModalSubmit} />
+            {inventoryList.length > 0 && <AddInventoryModal item={currentItem} modal={modal} setModal={setModal} onModalSubmit={onModalSubmit} />}
             <ScrollView style={{}} showsVerticalScrollIndicator={false}>
                 <View style={{
                     flexDirection: 'row',

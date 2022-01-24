@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, Dimensions, Alert, NativeModules } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Dimensions, Alert, NativeModules, ToastAndroid } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { getFocusedRouteNameFromRoute, useNavigation, useRoute } from '@react-navigation/native';
+import { CommonActions, getFocusedRouteNameFromRoute, useNavigation, useRoute } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal'
@@ -115,12 +115,12 @@ const AuthNavigator = () => {
               console.log(err)
             })
 
-            GetAllLinks(items[0][1])
-            .then(res=>{
-              if(res.status === 200){
+          GetAllLinks(items[0][1])
+            .then(res => {
+              if (res.status === 200) {
                 setLinks(res.data[0])
               }
-            }).catch(err=>{
+            }).catch(err => {
               console.log(error)
             })
         }
@@ -136,29 +136,17 @@ const AuthNavigator = () => {
     UpdateTechnicianDetails(detailId, token, formData)
       .then(res => {
         if (res.status === 200) {
-          setOnline(!online)
+          ToastAndroid.show('Status Changed!', ToastAndroid.SHORT);
         }
       }).catch(err => {
-        console.log(err)
+        console.log(err.response.data)
       })
 
 
   }
 
-  // const removeAppKeys = async () => {
-  //   let keys = []
-  //   try {
-  //     keys = await AsyncStorage.getAllKeys()
-  //     console.log(`Keys: ${keys}`) // Just to see what's going on
-  //     await AsyncStorage.multiRemove(keys)
-  //     navigation.replace('Login')
-  //   } catch(e) {
-  //    console.log(e)
-  //   }
-  //   console.log('Done')
-  // }
 
-  const logout =()=>{
+  const logout = () => {
     return Alert.alert(
       "Log Out?",
       "Are you sure you want to Logout?",
@@ -167,12 +155,12 @@ const AuthNavigator = () => {
         {
           text: "Yes",
           onPress: () => {
-            
+
             AsyncStorage.clear()
-            .then(() => {
-              NativeModules.DevSettings.reload();
-            })
-            .catch(err => console.log("CLEAR",err));
+              .then(() => {
+                navigation.dispatch(resetAction)
+              })
+              .catch(err => console.log("CLEAR", err));
           },
         },
         // The "No" button
@@ -183,6 +171,10 @@ const AuthNavigator = () => {
       ]
     );
   }
+  const resetAction = CommonActions.reset({
+    index: 0,
+    routes: [{ name: 'Splash' }],
+  });
 
   return (
     <>
@@ -327,7 +319,7 @@ const AuthNavigator = () => {
         backdropColor={"#000000"}
         animationIn="slideInLeft"
         animationOut="slideOutLeft"
-        swipeDirection={[ "left"]}
+        swipeDirection={["left"]}
         onSwipeComplete={() => { setModal(false) }}
         onBackdropPress={() => { setModal(false) }}
         style={{ margin: 0, justifyContent: "flex-start", }}>
@@ -339,12 +331,12 @@ const AuthNavigator = () => {
           flex: 1,
           width: Dimensions.get('screen').width / 1.5
         }}>
-          <Image source={require('../assets/images/sidebarBG.png')} style={{ width :Dimensions.get('screen').width / 1.5,height:170}} />
-          <Text onPress={()=>{openBrowser(links?.contactusUrl)}}  style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Contact Us</Text>
-          <Text onPress={()=>{openBrowser(links?.referUrl)}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Refer Friend</Text>
-          <Text onPress={()=>{openBrowser(links?.guidelinesUrl)}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Guidelines</Text>
-          <Text onPress={()=>{openBrowser(links?.termsUrl)}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Terms & Condition</Text>
-          <Text onPress={()=>{logout()}} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22,padding:10,marginLeft:10 }}>Logout <MaterialCommunityIcons size={24} name='power' /></Text>
+          <Image source={require('../assets/images/sidebarBG.png')} style={{ width: Dimensions.get('screen').width / 1.5, height: 170 }} />
+          <Text onPress={() => { setModal(false); openBrowser(links?.contactusUrl) }} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22, padding: 10, marginLeft: 10 }}>Contact Us</Text>
+          <Text onPress={() => { setModal(false); openBrowser(links?.referUrl) }} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22, padding: 10, marginLeft: 10 }}>Refer Friend</Text>
+          <Text onPress={() => { setModal(false); openBrowser(links?.guidelinesUrl) }} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22, padding: 10, marginLeft: 10 }}>Guidelines</Text>
+          <Text onPress={() => { setModal(false); openBrowser(links?.termsUrl) }} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22, padding: 10, marginLeft: 10 }}>Terms & Condition</Text>
+          <Text onPress={() => { setModal(false); logout() }} style={{ color: '#6F6F6F', fontWeight: '400', fontSize: 22, padding: 10, marginLeft: 10 }}>Logout <MaterialCommunityIcons size={24} name='power' /></Text>
         </View>
       </Modal>
     </>
