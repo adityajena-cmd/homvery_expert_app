@@ -18,7 +18,7 @@ const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
 
     const [qty, setqty] = useState(1);
     console.log(item.item_price)
-    const [priceText, setPriceText] = useState(item.item_price.toString());
+    const [priceText, setPriceText] = useState(item?.item_price?.toString());
     useEffect(() => {
         if (item.item_price !== undefined) {
             setPriceText(item.item_price.toString())

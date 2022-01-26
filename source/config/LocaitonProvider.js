@@ -44,14 +44,17 @@ async function requestCameraPermisiion() {
     }
 }
 
-async function requestStoragePermisiion() {
+async function askAllPermision() {
     try {
         const granted = await PermissionsAndroid.requestMultiple(
-           [ PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE],
+            [
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE],
             {
                 'title': 'Homevery App',
-                'message': 'Homevery App access to your Files '
+                'message': 'Homevery App wants these permission '
             }
         )
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -68,8 +71,8 @@ async function requestStoragePermisiion() {
 }
 
 export {
-    
+
     requestLocationPermission,
     requestCameraPermisiion,
-    requestStoragePermisiion
+    askAllPermision
 }

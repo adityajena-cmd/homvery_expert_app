@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, ToastAndroid } from 'react-native'
+import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, ToastAndroid, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import OTPTextInput from 'react-native-otp-textinput'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import { Button } from 'react-native-paper'
@@ -91,42 +91,44 @@ const OtpVerification = ({ navigation, route }) => {
     }
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 15 }}>
-                <TouchableOpacity onPress={() => { navigation.goBack() }}><Fontisto name="arrow-left-l" color={'#8A8A8A'} size={20} /></TouchableOpacity>
-                <Text style={{ fontSize: 20, color: '#8A8A8A' }}>OTP Verification</Text>
-                <Fontisto name="arrow-left" color={'#FFFFFF00'} size={20} />
-            </View>
-            <View style={{}}>
-                <View style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                    <Image source={require('../assets/images/otpImg1.png')} style={{ resizeMode: 'contain', height: 150, width: 250, marginVertical: 40 }} />
-                    <Text style={{ color: '#05194E', fontSize: 20, fontWeight: '500' }}>We have sent a verification code to</Text>
-                    <Text style={{ color: '#05194E', fontSize: 30, fontWeight: '500', marginTop: 20 }}>{'+91 - ' + route?.params.num}</Text>
-                    <OTPTextInput
-                        tintColor={!isError ? '#00B0EB' : '#FF0000'}
-                        offTintColor={!isError ? '#00B0EB' : '#FF0000'}
-
-                        handleTextChange={text => { setOtp(text); setError(false) }}
-                        textInputStyle={{ borderRadius: 10, borderWidth: 2, borderColor: '#00B0EB', marginVertical: 20, borderBottomWidth: 2 }}
-                    />
-                    <TouchableOpacity onPress={()=>{
-                        if(!loading){
-                            getOTP()
-                        }
-                        }}><Text style={{ color: '#8A8A8A', fontSize: 20, fontWeight: '500', marginTop: 10 }}>If you don't receive a OTP!<Text style={{ color: '#05194E', fontSize: 20, fontWeight: '500', }}>   Resend</Text></Text></TouchableOpacity>
-                    <Button onPress={validateOTP}
-                        disabled={loading}
-                        loading={loading}
-                        color='#05194E'
-                        style={{ marginTop: 30, width: '60%', fontSize: 20, borderRadius: 10, paddingVertical: 5 }}
-                        mode="contained"
-                    ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Verify</Text></Button>
-
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 15 }}>
+                    <TouchableOpacity onPress={() => { navigation.goBack() }}><Fontisto name="arrow-left-l" color={'#8A8A8A'} size={20} /></TouchableOpacity>
+                    <Text style={{ fontSize: 20, color: '#8A8A8A' }}>OTP Verification</Text>
+                    <Fontisto name="arrow-left" color={'#FFFFFF00'} size={20} />
                 </View>
-            </View><View style={{ display: 'flex', flex: 1, justifyContent: 'flex-end', alignContent: 'flex-end', alignItems: 'flex-end' }}>
-                <Image source={require('../assets/images/otpImg2.png')} style={{ resizeMode: 'contain', width: Dimensions.get('screen').width, }} />
+                <View style={{}}>
+                    <View style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                        <Image source={require('../assets/images/otpImg1.png')} style={{ resizeMode: 'contain', height: 150, width: 250, marginVertical: 40 }} />
+                        <Text style={{ color: '#05194E', fontSize: 20, fontWeight: '500' }}>We have sent a verification code to</Text>
+                        <Text style={{ color: '#05194E', fontSize: 30, fontWeight: '500', marginTop: 20 }}>{'+91 - ' + route?.params.num}</Text>
+                        <OTPTextInput
+                            tintColor={!isError ? '#00B0EB' : '#FF0000'}
+                            offTintColor={!isError ? '#00B0EB' : '#FF0000'}
+
+                            handleTextChange={text => { setOtp(text); setError(false); if(text.length ===4 ) Keyboard.dismiss() }}
+                            textInputStyle={{ borderRadius: 10, borderWidth: 2, borderColor: '#00B0EB', marginVertical: 20, borderBottomWidth: 2 }}
+                        />
+                        <TouchableOpacity onPress={() => {
+                            if (!loading) {
+                                getOTP()
+                            }
+                        }}><Text style={{ color: '#8A8A8A', fontSize: 20, fontWeight: '500', marginTop: 10 }}>If you don't receive a OTP!<Text style={{ color: '#05194E', fontSize: 20, fontWeight: '500', }}>   Resend</Text></Text></TouchableOpacity>
+                        <Button onPress={validateOTP}
+                            disabled={loading || otp.length !== 4}
+                            loading={loading}
+                            color='#05194E'
+                            style={{ marginTop: 30, width: '60%', fontSize: 20, borderRadius: 10, paddingVertical: 5 }}
+                            mode="contained"
+                        ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Verify</Text></Button>
+
+                    </View>
+                </View><View style={{ display: 'flex', flex: 1, justifyContent: 'flex-end', alignContent: 'flex-end', alignItems: 'flex-end' }}>
+                    <Image source={require('../assets/images/otpImg2.png')} style={{ resizeMode: 'contain', width: Dimensions.get('screen').width, }} />
+                </View>
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     );
 }
 

@@ -149,7 +149,7 @@ export default function ExpertProfile({ navigation }) {
               <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 15, textAlign: 'center', marginVertical: 10 }}>Approval Status Pending</Text>
               <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Please fill all the details in my profile section</Text>
 
-              <Button onPress={() => { }}
+              <Button onPress={() => { navigation.navigate('EditProfile',{ data: {}, token: token, user: userId }) }}
                 style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '50%', alignSelf: 'center', marginBottom: 50, marginTop: 10 }}
                 mode="contained">
                 <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Submit Details</Text>

@@ -209,11 +209,11 @@ export default function ProfileUploader({ navigation }) {
                         resizeMode='contain'
                         style={{ height: Dimensions.get('screen').width / 10, width: Dimensions.get('screen').width / 10, }} />
                     <Text style={{ color: '#05194E', fontWeight: '500', fontSize: 20, marginHorizontal: 15 }}>Adhar Card</Text>
-                    {profileData?.aadharcard_photo == null ? <Image
+                    {profileData?.aadharcard_photo == null || aadharDoc === null ? <Image
                         resizeMode='contain'
-                        source={aadharDoc ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
+                        source={aadharDoc || profileData?.aadharcard_photo ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
                     /> : <></>}
-                    {profileData?.aadharcard_photo == null ? <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                    {profileData?.aadharcard_photo == null|| aadharDoc === null ? <View style={{ flex: 1, alignItems: 'flex-end' }}>
                         <Image
                             resizeMode='contain'
                             style={{ height: Dimensions.get('screen').width / 12, width: Dimensions.get('screen').width / 12 }}
@@ -231,9 +231,9 @@ export default function ProfileUploader({ navigation }) {
                         resizeMode='contain'
                         style={{ height: Dimensions.get('screen').width / 10, width: Dimensions.get('screen').width / 10, }} />
                     <Text style={{ color: '#05194E', fontWeight: '500', fontSize: 20, marginHorizontal: 15 }}>Signature</Text>
-                    {profileData?.signature == null ? <Image
+                    {profileData?.signature == null  || signatureDoc == null?  <Image
                         resizeMode='contain'
-                        source={signatureDoc ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
+                        source={signatureDoc || profileData?.signature ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
                     /> : <></>}
                     {profileData?.signature == null ? <View style={{ flex: 1, alignItems: 'flex-end' }}>
                         <Image
@@ -270,9 +270,9 @@ export default function ProfileUploader({ navigation }) {
                         resizeMode='contain'
                         style={{ height: Dimensions.get('screen').width / 10, width: Dimensions.get('screen').width / 10, }} />
                     <Text style={{ color: '#05194E', fontWeight: '500', fontSize: 20, marginHorizontal: 15 }}>Covid Certificate</Text>
-                    {profileData?.covidcertificate == null ? <Image
+                    {profileData?.covidcertificate == null || covidDoc == null ? <Image
                         resizeMode='contain'
-                        source={covidDoc ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
+                        source={covidDoc || profileData?.covidcertificate ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
                     /> : <></>}
                     {profileData?.covidcertificate == null ? <View style={{ flex: 1, alignItems: 'flex-end' }}>
                         <Image

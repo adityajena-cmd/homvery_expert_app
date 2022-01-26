@@ -379,7 +379,7 @@ export default function ExpertBookings({ navigation }) {
             </TouchableOpacity>
             <ImageBackground source={getWalletBG(balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
+                    <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Balance</Text>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('WalletDetails', {
                             balance: balance,

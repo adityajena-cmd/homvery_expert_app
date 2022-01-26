@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Dimensions, Image, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
-import { Button } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Dimensions, Image, TextInput, TouchableOpacity, Alert, Platform, ToastAndroid } from 'react-native';
+import { BottomNavigation, Button } from 'react-native-paper';
 import { getDate } from '../config/Utils';
 import { launchCamera } from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { UpdateUser, UploadProfile } from '../config/apis/ProfileApis';
+import { UpdateTechnicianDetails, UpdateUser, UploadProfile } from '../config/apis/ProfileApis';
+import { requestCameraPermisiion } from '../config/LocaitonProvider';
 
 
 const options = {
@@ -34,7 +35,7 @@ export const FormTextInput = (props) => {
     )
 }
 
-export default function PersonalDetails({ route }) {
+export default function PersonalDetails({ navigation, route }) {
     const width = Dimensions.get('screen').width
     const [token, setToken] = useState(route?.params?.token)
     const [userId, setUserId] = useState(route?.params?.user)
@@ -54,10 +55,123 @@ export default function PersonalDetails({ route }) {
     const [accountNo, setaccountNo] = useState(profile.bank_account_number ? profile.bank_account_number : "NA")
     const [ifscCode, setifscCode] = useState(profile.ifsc ? profile.ifsc : "NA")
     const [bankName, setbankName] = useState(profile.bankname ? profile.bankname : "NA")
+    const [accountHolder, setAccountHolder] = useState(profile.accountHolderName ? profile.accountHolderName : "NA")
     const [isLoading, setLoading] = useState(false)
 
 
+    useEffect(() => {
+        requestCameraPermisiion()
+
+    }, []);
+
+
+
+    const updateDeatils = (body) => {
+        setLoading(true)
+        let fmData = new FormData()
+        fmData.append("data", body)
+        UpdateTechnicianDetails(userId, token, fmData)
+            .then(res => {
+                setLoading(false)
+
+                if (res.data === 200) {
+                    ToastAndroid.show('Profile Updated!', ToastAndroid.SHORT);
+                    navigation.goBack();
+                }
+
+
+            }).catch(err => {
+                setLoading(false)
+
+                console.log(err)
+            })
+    }
+
     const validateData = () => {
+
+        if (day.length == 0 || day == null || day == undefined || day === 'NA') {
+            ToastAndroid.show('Enter a Valid Date!', ToastAndroid.SHORT);
+            return;
+        }
+        if (month.length == 0 || month == null || month == undefined || month === 'NA') {
+            ToastAndroid.show('Enter a Valid Date!', ToastAndroid.SHORT);
+            return;
+        }
+        if (year.length == 0 || year == null || year == undefined || year === 'NA') {
+            ToastAndroid.show('Enter a Valid Date!', ToastAndroid.SHORT);
+            return;
+        }
+        if (expirence.length == 0 || expirence == null || expirence == undefined || expirence === 'NA') {
+            ToastAndroid.show('Enter a Valid Expirence!', ToastAndroid.SHORT);
+            return;
+        }
+        if (blood.length == 0 || blood == null || blood == undefined || blood === 'NA') {
+            ToastAndroid.show('Enter your Blood Group!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (aadhar.length == 0 || aadhar == null || aadhar == undefined || aadhar === 'NA') {
+            ToastAndroid.show('Enter Aadhar Info!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (alternateNumber.length == 0 || alternateNumber == null || alternateNumber == undefined || alternateNumber === 'NA') {
+            ToastAndroid.show('Enter a Alternate Number!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (familyMemberName.length == 0 || familyMemberName == null || familyMemberName == undefined || familyMemberName === 'NA') {
+            ToastAndroid.show('Enter a Family Member!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (familyContact.length == 0 || familyContact == null || familyContact == undefined || familyContact === 'NA') {
+            ToastAndroid.show('Enter a Family Contact!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (familyRelation.length == 0 || familyRelation == null || familyRelation == undefined || familyRelation === 'NA') {
+            ToastAndroid.show('Enter the members Relation!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (accountNo.length == 0 || accountNo == null || accountNo == undefined || accountNo === 'NA') {
+            ToastAndroid.show('Enter your Account No!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (ifscCode.length == 0 || ifscCode == null || ifscCode == undefined || ifscCode === 'NA') {
+            ToastAndroid.show('Enter your Ifsc Code!', ToastAndroid.SHORT);
+            return;
+        }
+
+        if (bankName.length == 0 || bankName == null || bankName == undefined || bankName === 'NA') {
+            ToastAndroid.show('Enter your Ifsc Code!', ToastAndroid.SHORT);
+            return;
+        }
+        if (accountHolder.length == 0 || accountHolder == null || accountHolder == undefined || accountHolder === 'NA') {
+            ToastAndroid.show('Enter Account Holder Name!', ToastAndroid.SHORT);
+            return;
+        }
+
+
+        const profileData = {
+            "technician": userId,
+            "aadhar": aadhar,
+            "modified_by": userId,
+            "dob": year + "-" + month + "-" + day,
+            "bankname": bankName,
+            "accountHolderName": accountHolder,
+            "family_contact_number": familyContact,
+            "family_contact_name": familyMemberName,
+            "family_member_relationship": familyRelation,
+            "bloodgroup": blood,
+            "experience": expirence,
+            "bank_account_number": accountNo,
+            "ifsc": ifscCode
+        }
+
+        updateDeatils(profileData);
 
 
     }
@@ -142,7 +256,10 @@ export default function PersonalDetails({ route }) {
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ paddingHorizontal: 20, paddingTop: 10, }}>
                     <Image source={profilesource ? profilesource : profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } : require('../assets/images/EP.png')} style={{ width: width * 0.5, height: width * 0.5, marginBottom: 10, alignSelf: 'center' }} />
-                    <TouchableOpacity onPress={() => { addImage() }}>
+                    <TouchableOpacity onPress={() => {
+                        requestCameraPermisiion();
+                        addImage()
+                    }}>
                         <Text style={{ color: '#41C461', fontWeight: '500', marginBottom: 20, fontSize: 15, marginTop: -20, textAlign: 'center' }}><MaterialCommunityIcons size={16} name='pencil' /> Edit</Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row' }}>
@@ -166,7 +283,7 @@ export default function PersonalDetails({ route }) {
                         </View>
                     </View>
                     <FormTextInput label="Expirence" placeholder="Expirence(Years)" onChangeText={(text) => { setexpirence(text) }} value={expirence} keyboardType="numeric" />
-                    <FormTextInput label="Blood Group" placeholder="Blood Group" value={blood} />
+                    <FormTextInput label="Blood Group" onChangeText={(text) => { setblood(text) }}  placeholder="Blood Group" value={blood} />
                     <FormTextInput label="Aadhar Card No" placeholder="Aadhar Card No" onChangeText={(text) => { setaadhar(text) }} maxLength={12} value={aadhar} keyboardType={'numeric'} />
 
 
@@ -179,6 +296,7 @@ export default function PersonalDetails({ route }) {
                     <FormTextInput label="Account Number" placeholder="Account Number" keyboardType={'numeric'} onChangeText={(text) => { setaccountNo(text) }} value={accountNo} />
                     <FormTextInput label="Bank Name" placeholder="Bank Name" value={bankName} onChangeText={(text) => { setbankName(text) }} />
                     <FormTextInput label="IFSC code" placeholder="IFSC code" value={ifscCode} onChangeText={(text) => { setifscCode(text) }} />
+                    <FormTextInput label="Account Holder Name" placeholder="Account Holder Name" value={accountHolder} onChangeText={(text) => { setAccountHolder(text) }} />
                 </View>
 
             </ScrollView>
@@ -186,7 +304,10 @@ export default function PersonalDetails({ route }) {
                 <Button onPress={() => {
                     validateData()
                 }}
-                    style={{ width: '50%', marginVertical: 20, fontSize: 20, backgroundColor: '#05194E', borderRadius: 10, paddingVertical: 0 }}
+                    disabled={isLoading}
+                    loading={isLoading}
+                    color='#05194E'
+                    style={{ width: '50%', marginVertical: 20, fontSize: 20, borderRadius: 10, paddingVertical: 0 }}
                     mode="contained"
                 ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Save</Text></Button>
             </View>

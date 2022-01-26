@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react'
 import { View, Text, Image, Dimensions } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GetLocation, requestLocationPermission,requestCameraPermisiion, requestStoragePermisiion } from '../config/LocaitonProvider';
+import { GetLocation, requestLocationPermission,requestCameraPermisiion, requestStoragePermisiion, askAllPermision } from '../config/LocaitonProvider';
 
 const Splash = ({ navigation }) => {
     useEffect(() => {
-        requestLocationPermission()
-        requestCameraPermisiion()
-        requestStoragePermisiion()
+
+        askAllPermision()
 
         setTimeout(() => {
             AsyncStorage.multiGet(
@@ -18,7 +17,7 @@ const Splash = ({ navigation }) => {
                         navigation.replace('Login');
                     } else {
                         if(items[2][1] === 'HOME'){
-                            navigation.replace('Home')
+                            navigation.replace('Home',{screen:'Bookings'})
                         }
                         else if (items[0][1] !== null && items[1][1] !== null) {
                             navigation.replace('ProfileUploader')

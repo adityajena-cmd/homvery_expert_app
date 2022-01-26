@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Dimensions, Alert, NativeModules, ToastAndroid } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
@@ -43,6 +43,14 @@ function Screen() {
 //   );
 // }
 function Bottomtabs() {
+
+  const [state, setState] = useState('');
+  useEffect(async () => {
+    let board = await AsyncStorage.getItem('ON_BOARD');
+    setState(board)
+  }, []);
+
+
   return (
     <BottomTab.Navigator
       initialRouteName='Bookings'
@@ -50,27 +58,50 @@ function Bottomtabs() {
       activeColor="#4E53C8"
       inactiveColor="#ccc"
     >
-      <BottomTab.Screen
-        options={{
-          tabBarLabel: 'Bookings',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
-          ),
-        }}
-        name="Bookings"
-        component={ExpertBookings} />
-      <BottomTab.Screen
-        options={{
-          tabBarLabel: 'Payout',
-          tabBarIcon: ({ color, focused }) => (
-            focused ? <Image source={require('../assets/images/payoutActive.png')} resizeMode='cover' />
-              : <Image source={require('../assets/images/payout.png')} resizeMode='cover' />
-            // <MaterialCommunityIcons name="bitcoin" color={color} size={24} />
-          ),
-        }}
-        name="Payout"
-        component={Screen} />
-
+      {state === 'HOME' ? <>
+        <BottomTab.Screen
+          options={{
+            tabBarLabel: 'Bookings',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
+            ),
+          }}
+          name="Bookings"
+          component={ExpertBookings} />
+        <BottomTab.Screen
+          options={{
+            tabBarLabel: 'Payout',
+            tabBarIcon: ({ color, focused }) => (
+              focused ? <Image source={require('../assets/images/payoutActive.png')} resizeMode='cover' />
+                : <Image source={require('../assets/images/payout.png')} resizeMode='cover' />
+              // <MaterialCommunityIcons name="bitcoin" color={color} size={24} />
+            ),
+          }}
+          name="Payout"
+          component={Screen} />
+      </> : <>
+        <BottomTab.Screen
+          options={{
+            tabBarLabel: 'Bookings',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
+            ),
+          }}
+          name="Bookings"
+          component={ExpertProfile} />
+        <BottomTab.Screen
+          options={{
+            tabBarLabel: 'Payout',
+            tabBarIcon: ({ color, focused }) => (
+              focused ? <Image source={require('../assets/images/payoutActive.png')} resizeMode='cover' />
+                : <Image source={require('../assets/images/payout.png')} resizeMode='cover' />
+              // <MaterialCommunityIcons name="bitcoin" color={color} size={24} />
+            ),
+          }}
+          name="Payout"
+          component={ExpertProfile} />
+      </>
+      }
       <BottomTab.Screen
         options={{
           tabBarLabel: 'My Profile',
@@ -127,20 +158,33 @@ const AuthNavigator = () => {
       }
     )
   }, [])
-  const switchAvailable = () => {
+  const switchAvailable = async () => {
     setOnline(!online)
-    let formData = new FormData();
-    formData.append('data', JSON.stringify({
-      "available": !online,
-    }))
-    UpdateTechnicianDetails(detailId, token, formData)
-      .then(res => {
-        if (res.status === 200) {
-          ToastAndroid.show('Status Changed!', ToastAndroid.SHORT);
+
+    AsyncStorage.multiGet(
+      ['API_TOKEN', 'DETAILS_ID', 'USER_ID'],
+      (err, items) => {
+        if (err) {
+          console.log("ERROR=============================", err);
+        } else {
+          let formData = new FormData();
+          formData.append('data', JSON.stringify({
+            "available": !online,
+          }))
+          setToken(items[0][1])
+          setDetailId(items[1][1])
+
+          UpdateTechnicianDetails(items[1][1], items[0][1], formData)
+            .then(res => {
+              if (res.status === 200) {
+                ToastAndroid.show('Status Changed!', ToastAndroid.SHORT);
+              }
+            }).catch(err => {
+              console.log(err.response.data)
+            })
         }
-      }).catch(err => {
-        console.log(err.response.data)
       })
+
 
 
   }
@@ -173,7 +217,7 @@ const AuthNavigator = () => {
   }
   const resetAction = CommonActions.reset({
     index: 0,
-    routes: [{ name: 'Splash' }],
+    routes: [{ name: 'Login' }],
   });
 
   return (

@@ -40,7 +40,7 @@ const GetWalletDetails = (userId, token) => {
 const GetWalletTransaction = (userId, token) => {
   const header = getUserToken(token);
 
-  return axios.get(urlConfig.baseURL + '/transactions?wallet.user=' + userId, header);
+  return axios.get(urlConfig.baseURL + `/transactions?wallet.user=${userId}&_sort=created_at:DESC`, header);
 };
 
 const StartTechinician = ( token,body) => {

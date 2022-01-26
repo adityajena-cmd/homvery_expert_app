@@ -19,6 +19,10 @@ export default function WalletDetails({ navigation, route }) {
   const width = Dimensions.get('screen').width;
   const [modal, setModal] = React.useState(route?.params?.modal);
   const [value, setValue] = React.useState(1);
+
+  const [firstDate, setFirstDate] = React.useState('');
+  const [secondDate, setSecondDate] = React.useState('');
+
   const [transactions, setTransactions] = React.useState([]);
   const [isRefresh, setRefresh] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -42,6 +46,8 @@ export default function WalletDetails({ navigation, route }) {
         if (res.status === 200) {
           setLoad(load + 1)
           setModal(false)
+          setValue(1)
+
         }
       }).catch(err => {
         setLoading(false)
@@ -138,6 +144,7 @@ export default function WalletDetails({ navigation, route }) {
             ToastAndroid.show(amount + 'Coins Withdrawn!', ToastAndroid.SHORT);
             setLoad(load + 1)
             setModal(false)
+            setValue(1)
           }
         }).catch(err => {
           setLoading(false)
@@ -184,10 +191,13 @@ export default function WalletDetails({ navigation, route }) {
 
               console.log(res.data)
               if (res.status === 200) {
-                let data = res.data.sort(function (a, b) {
-                  return a.id - b.id
-                })
-                setTransactions(data)
+                setTransactions(res.data)
+                let leng = res.data.length;
+                let fD = moment(new Date(res.data[leng - 1]?.created_at)).format('Do MMM YYYY');
+                let sD = moment(new Date(res.data[0]?.created_at)).format('Do MMM YYYY');
+
+                setFirstDate(fD)
+                setSecondDate(sD)
               }
 
             }).catch(err => {
@@ -212,7 +222,7 @@ export default function WalletDetails({ navigation, route }) {
     <View style={{ flex: 1, backgroundColor: '#F8F8F8', paddingHorizontal: 10 }}>
       <ImageBackground source={getWalletBG(balance)} style={{ borderRadius: 10, elevation: 5, height: width / 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 15, marginTop: 10 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Ballance</Text>
+          <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '500', }}>Wallet Balance</Text>
           <TouchableOpacity><Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400', borderBottomColor: '#ffffff', borderBottomWidth: 1 }}>View details</Text></TouchableOpacity>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center' }}>
@@ -230,7 +240,7 @@ export default function WalletDetails({ navigation, route }) {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-      <Text style={{ fontSize: 18, color: '#000000', marginVertical: 10 }}>20-27 December 2021</Text>
+      <Text style={{ fontSize: 18, color: '#000000', marginVertical: 10 }}>{firstDate ? firstDate + " - " + secondDate : ""}</Text>
       <ScrollView showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -279,12 +289,12 @@ export default function WalletDetails({ navigation, route }) {
         backdropColor={"#000000"}
         animationType="fadeIn"
         swipeDirection={['down']}
-        onSwipeComplete={() => { setModal(false) }}
+        onSwipeComplete={() => { setModal(false); setValue(1) }}
         style={{ margin: 30, justifyContent: "center", }}>
         <View style={{ backgroundColor: '#ffffff', paddingHorizontal: 20, paddingVertical: 20, borderRadius: 15, display: 'flex', alignContent: 'center', alignItems: 'center', }}>
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
             <Text style={{ color: '#635E5E', textAlign: 'center', fontSize: 16, fontWeight: '500', marginBottom: 10 }}></Text>
-            <TouchableOpacity onPress={() => { setModal(false) }}>
+            <TouchableOpacity onPress={() => { setModal(false); setValue(1) }}>
               <Ionicons name="close" size={30} color={'#000000'} />
             </TouchableOpacity>
           </View>
@@ -327,7 +337,7 @@ export default function WalletDetails({ navigation, route }) {
             <Button onPress={() => { IntiateTransaction(value * 500) }}
               color='#05194E'
               loading={loading}
-              disabled={loading}
+              disabled={loading || type === 'Recharge' ? false:value * 500 >balance}
               style={{ borderRadius: 10, paddingVertical: .5, width: '80%', alignSelf: 'center' }}
               mode="contained">
               <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>{type ? type.toUpperCase() + " " + (value * 500) + ' coins' : ""}</Text>
