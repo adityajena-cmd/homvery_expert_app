@@ -149,7 +149,7 @@ function Screen3({ navigation, data, onRefresh, isRefresh }) {
                         data.map(item => {
                             if (item.bookingstatusid?.name === 'BOOKING_COMPLETED') {
                                 return (
-                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails', { data: item }) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails', { data: item,paid:true }) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
                                         <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/grg.png')} resizeMode='cover'>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ color: '#26A245', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>
@@ -184,7 +184,7 @@ function Screen3({ navigation, data, onRefresh, isRefresh }) {
                                 )
                             } else {
                                 return (
-                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails', { data: item }) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
+                                    <TouchableOpacity onPress={() => { navigation.navigate('BookingDetails', { data: item,paid:false }) }} style={{ backgroundColor: '#ffffff', elevation: 5, borderRadius: 10, margin: 5, marginBottom: 10 }}>
                                         <ImageBackground style={{ borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10, }} source={require('../assets/images/gre.png')} resizeMode='cover'>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ color: '#A22634', fontSize: 18, fontWeight: '600' }}>{item.bookingid?.serviceid?.name}</Text>

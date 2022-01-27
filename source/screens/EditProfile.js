@@ -6,6 +6,7 @@ import { launchCamera } from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { UpdateTechnicianDetails, UpdateUser, UploadProfile } from '../config/apis/ProfileApis';
 import { requestCameraPermisiion } from '../config/LocaitonProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const options = {
@@ -42,15 +43,15 @@ export default function PersonalDetails({ navigation, route }) {
     const [profile, setProfile] = useState(route?.params?.data)
     const [profilesource, setProfileSource] = useState('')
 
-    const [day, setDay] = useState(profile && getDate(profile.dob)[2])
-    const [month, setmonth] = useState(profile && getDate(profile.dob)[1])
-    const [year, setyear] = useState(profile && getDate(profile.dob)[0])
+    const [day, setDay] = useState(profile.dob && getDate(profile.dob)[2])
+    const [month, setmonth] = useState(profile.dob && getDate(profile.dob)[1])
+    const [year, setyear] = useState(profile.dob && getDate(profile.dob)[0])
     const [expirence, setexpirence] = useState(profile.experience ? profile.experience : "NA")
     const [blood, setblood] = useState(profile.bloodgroup ? profile.bloodgroup : "NA")
     const [aadhar, setaadhar] = useState(profile.aadhar?.length == 12 ? profile.aadhar : "NA")
     const [alternateNumber, setalternateNumber] = useState(profile.technician && profile.technician?.alternatephonenumber)
     const [familyMemberName, setfamilyMemberName] = useState(profile.family_contact_name ? profile.family_contact_name : "NA")
-    const [familyContact, setfamilyContact] = useState(profile.family_contact_number.length === 10 ? profile.family_contact_number : "NA")
+    const [familyContact, setfamilyContact] = useState(profile.family_contact_number?.length === 10 ? profile.family_contact_number : "NA")
     const [familyRelation, setfamilyRelation] = useState(profile.family_member_relationship ? profile.family_member_relationship : "NA")
     const [accountNo, setaccountNo] = useState(profile.bank_account_number ? profile.bank_account_number : "NA")
     const [ifscCode, setifscCode] = useState(profile.ifsc ? profile.ifsc : "NA")
@@ -65,26 +66,46 @@ export default function PersonalDetails({ navigation, route }) {
     }, []);
 
 
+    const saveDetailsOnBoard = async () => {
+        try {
+            await AsyncStorage.setItem('ON_BOARD', "DETAILS");
+            navigation.goBack()
+
+        }
+        catch (err) {
+            console.log(err)
+
+        }
+    }
 
     const updateDeatils = (body) => {
         setLoading(true)
-        let fmData = new FormData()
-        fmData.append("data", body)
-        UpdateTechnicianDetails(userId, token, fmData)
-            .then(res => {
-                setLoading(false)
+        AsyncStorage.multiGet(
+            ['API_TOKEN', 'DETAILS_ID', 'USER_ID'],
+            (err, items) => {
+                if (err) {
+                } else {
+                    let fmData = new FormData()
+                    fmData.append("data", JSON.stringify(body))
+                    UpdateTechnicianDetails(items[1][1], items[0][1], fmData)
+                        .then(res => {
+                            setLoading(false)
+                            if (res.status === 200) {
+                                ToastAndroid.show('Profile Updated!', ToastAndroid.SHORT);
+                                saveDetailsOnBoard()
+                            }
 
-                if (res.data === 200) {
-                    ToastAndroid.show('Profile Updated!', ToastAndroid.SHORT);
-                    navigation.goBack();
+
+                        }).catch(err => {
+                            setLoading(false)
+                            console.log(err.response.data)
+                        })
+
                 }
-
-
-            }).catch(err => {
-                setLoading(false)
-
-                console.log(err)
             })
+
+
+
     }
 
     const validateData = () => {
@@ -283,7 +304,7 @@ export default function PersonalDetails({ navigation, route }) {
                         </View>
                     </View>
                     <FormTextInput label="Expirence" placeholder="Expirence(Years)" onChangeText={(text) => { setexpirence(text) }} value={expirence} keyboardType="numeric" />
-                    <FormTextInput label="Blood Group" onChangeText={(text) => { setblood(text) }}  placeholder="Blood Group" value={blood} />
+                    <FormTextInput label="Blood Group" onChangeText={(text) => { setblood(text) }} placeholder="Blood Group" value={blood} />
                     <FormTextInput label="Aadhar Card No" placeholder="Aadhar Card No" onChangeText={(text) => { setaadhar(text) }} maxLength={12} value={aadhar} keyboardType={'numeric'} />
 
 

@@ -1,57 +1,43 @@
 import moment from 'moment';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image, Dimensions, ToastAndroid } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { GetBillingDetails } from '../config/apis/BookingApis';
 import { copyClipboard, getFullAddress } from '../config/Utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-export const Invoice = (props) => {
+export const Invoice = ({paid,data,total}) => {
     const width = Dimensions.get('screen').width;
     return (
         <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 3, padding: 20, marginTop: 20, marginBottom: 20 }}>
             <Text style={{ color: '#000000', fontSize: 14, textAlign: 'center' }}>Payment Details</Text>
             <View style={{ height: 1, backgroundColor: '#EAE2E2', marginTop: 10, marginBottom: 10 }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                <View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14 }}>Base Payment</Text>
-                    </View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14 }}>Extra Amount</Text>
-                    </View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14 }}>Part 1</Text>
-                    </View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14 }}>Part 2</Text>
-                    </View>
-                </View>
-                {
-                    props.paid && <View>
-                        <Image style={{ width: width / 4, height: width / 4, }} source={require('../assets/images/paid.png')} />
-                    </View>
-                }
-                
-                <View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹500</Text>
-                    </View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹300</Text>
-                    </View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹200</Text>
-                    </View>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>₹400</Text>
-                    </View>
-                </View>
-            </View>
+            {data.length > 0 && data.map((item, index) => {
+                        return (
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', }}>
+
+                                <View style={{ marginTop: 10, flexDirection: 'row' }}>
+                                    <Text style={{ color: '#000000', fontSize: 14 }}>{item.name}</Text>
+                                </View>
+
+                                <View style={{ marginTop: 10 }}>
+
+                                    <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>{'₹ ' + item.cost.toString()}</Text>
+                                </View>
+                                {
+                                    index == 0 && paid ?
+                                        <Image style={{ marginLeft: width / 3, position: 'absolute', width: width / 4, height: width / 4,marginTop:30 }} source={require('../assets/images/paid.png')} />
+                                        : <></>
+
+                                }
+                            </View>)
+                    })}
             <View style={{ height: 1, backgroundColor: '#EAE2E2', marginTop: 10 }} />
             <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                 <View>
                     <Text style={{ color: '#000000', fontSize: 14, fontWeight: '600', width: width / 3 }}>Amount payed by customer</Text>
-                    <Text style={{ color: '#4E53C8', fontSize: 30, fontWeight: '600' }}>₹1400</Text>
+                    <Text style={{ color: '#4E53C8', fontSize: 30, fontWeight: '600' }}>{'₹' + total.toString()}</Text>
                 
                 </View>
                 <View style={{ width: 2, backgroundColor: '#DCEBF7', height: '100%' }} />
@@ -60,12 +46,12 @@ export const Invoice = (props) => {
                     
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignContent: 'center', alignSelf: 'center', marginBottom: 10 }}>
                         <Text style={{ color: '#000000', fontSize: 14, }}>HV Pay</Text>
-                        <Text style={{ color: '#000000', fontSize: 14, }}>-₹200</Text>
+                        <Text style={{ color: '#000000', fontSize: 14, }}>0</Text>
 
                     </View>
                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignContent: 'center', alignSelf: 'center' }}>
                         <Text style={{ color: '#000000', fontSize: 14, }}>Penalty</Text>
-                        <Text style={{ color: '#000000', fontSize: 14, }}>-₹100</Text>
+                        <Text style={{ color: '#000000', fontSize: 14, }}>0</Text>
 
                     </View>
                 </View>
@@ -74,7 +60,38 @@ export const Invoice = (props) => {
     );
 }
 export default function BookingDetails({navigation,route}) {
-    console.log("route----------------",route?.params?.data?.id)
+
+    const [billing, setBilling] = useState([]);
+    const [total, setTotal] = useState(0);
+
+    useEffect(() => {
+        AsyncStorage.multiGet(
+            ['API_TOKEN', 'USER_ID'],
+            (err, items) => {
+              if (err) {
+                console.log("ERROR=============================", err);
+              } else {
+                  GetBillingDetails(items[0][1],route?.params?.data?.bookingid?.id)
+                  .then(res=>{
+                      console.log(res.data)
+                      if(res.status === 200 && res.data.length>0){
+                          let to = 0;
+                          res.data.forEach(item=>{
+                            to = to+item.cost
+                          })
+                          setTotal(to)
+                        setBilling(res.data)
+                      }
+                  }).catch(err=>{
+                      console.log(err)
+                  })
+              }
+            })
+    }, []);
+    
+
+
+    console.log("route----------------",route?.params?.data?.bookingid?.id)
     let data = route?.params?.data;
     const width = Dimensions.get('screen').width
     return (
@@ -110,7 +127,7 @@ export default function BookingDetails({navigation,route}) {
                         </View>
                     </View>
                 </View>
-                <Invoice paid={false} />
+                <Invoice paid={route?.params?.paid} data={billing} total={total}/>
 
 
 

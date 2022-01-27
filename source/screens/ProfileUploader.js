@@ -17,6 +17,7 @@ export default function ProfileUploader({ navigation }) {
     const [aadharDoc, setAadharDoc] = useState(null)
     const [signatureDoc, setSignatureDoc] = useState(null)
     const [covidDoc, setCovidDoc] = useState(null)
+    const [profileDoc, setProfileDoc] = useState(null)
 
 
     const saveDetailsID = async (id) => {
@@ -208,7 +209,7 @@ export default function ProfileUploader({ navigation }) {
                         source={require('../assets/images/pu1.png')}
                         resizeMode='contain'
                         style={{ height: Dimensions.get('screen').width / 10, width: Dimensions.get('screen').width / 10, }} />
-                    <Text style={{ color: '#05194E', fontWeight: '500', fontSize: 20, marginHorizontal: 15 }}>Adhar Card</Text>
+                    <Text style={{ color: '#05194E', fontWeight: '500', fontSize: 20, marginHorizontal: 15 }}>Aadhar Card</Text>
                     {profileData?.aadharcard_photo == null || aadharDoc === null ? <Image
                         resizeMode='contain'
                         source={aadharDoc || profileData?.aadharcard_photo ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
@@ -287,7 +288,7 @@ export default function ProfileUploader({ navigation }) {
                     submitDocuments()
                 }}
                 mode="contained"
-                    disabled={loading }
+                    disabled={loading || (aadharDoc && covidcertificate && signatureDoc && profileDoc)}
                     loading={ loading}
                     color='#05194E'
                     style={{ marginTop: 30, width: '60%', fontSize: 20, borderRadius: 10, alignSelf: 'center' }}
