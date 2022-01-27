@@ -10,6 +10,8 @@ import Geolocation from '@react-native-community/geolocation';
 import { GetBookingStatus, ReachedTechinician, RescheduleBooking, StartTechinician } from '../config/apis/BookingApis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { copyClipboard, getFullAddress, openMaps, openPhone } from '../config/Utils';
+import CustomCalendar from '../components/CustomCalendar';
+
 
 const config = {
     enableHighAccuracy: false,
@@ -72,6 +74,7 @@ export default function OngoingBooking({ navigation, route }) {
     const [comments, setComments] = React.useState('');
     const [fromDate, setFromDate] = React.useState(null);
     const [toDate, setToDate] = React.useState(null);
+    const [scheduledDate, setScheduledDate] = React.useState('2012-07-09T19:22:09.1440844Z')
     const [loading, setLoading] = useState(false);
 
 
@@ -306,25 +309,34 @@ export default function OngoingBooking({ navigation, route }) {
                 backdropOpacity={0.3}
                 backdropColor={"#000000"}
                 animationType="fadeIn"
-                swipeDirection={['down', "up", "left", "right"]}
-                onSwipeComplete={() => { setModal(false) }}
-                onBackdropPress={() => { setModal(false) }}
+                // swipeDirection={['down', "up", "left", "right"]}
+                onSwipeComplete={() => {
+                    // setModal(false)
+                }}
+                onBackdropPress={() => {
+                    // setModal(false)
+                }}
                 style={{ margin: 30, justifyContent: "center", }}>
                 <View style={{ backgroundColor: '#ffffff', padding: 10, borderRadius: 15, display: 'flex', }}>
-                    <ScrollView>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: '#635E5E', textAlign: 'center', fontSize: 16, fontWeight: '500', marginBottom: 10 }}></Text>
-                            <TouchableOpacity onPress={() => { setModal(false) }}>
-                                <Ionicons name="close" size={30} color={'#000000'} />
-                            </TouchableOpacity>
-                        </View>
+                    
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ color: '#635E5E', textAlign: 'center', fontSize: 16, fontWeight: '500', marginBottom: 10 }}></Text>
+                        <TouchableOpacity onPress={() => { setModal(false) }}>
+                            <Ionicons name="close" size={30} color={'#000000'} />
+                        </TouchableOpacity>
+                    </View>
+                    <ScrollView showsVerticalScrollIndicator={false}>
                         <Text style={{ width: '100%', textAlign: 'left', fontWeight: '600', color: '#000000', fontSize: 15 }}>On which date you want to reschedule?</Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginTop: 15 }}>
                             <Text style={{ textAlign: 'center', color: '#000000', fontSize: 12 }}>Dec 2021</Text>
                             <Text style={{ textAlign: 'center', color: '#000000', fontSize: 12, textDecorationLine: 'underline' }}><MaterialCommunityIcons name='calendar-range' size={12} /> More Details</Text>
                         </View>
 
-                        <View><Text style={{ marginVertical: 20, textAlign: 'center', fontSize: 30, color: '#d8d8d8' }}>CALENDAR</Text></View>
+                        
+                        <CustomCalendar
+                            timestamp={scheduledDate }
+                            setTimestamp={(ts) => { setScheduledDate(ts) }}
+                        />
 
 
                         <View style={{ marginVertical: 20, backgroundColor: '#F5F5F550', height: 6 }} />

@@ -265,7 +265,7 @@ export default function CreateQuotation({ navigation, route }) {
                                 </View>
                                 <View style={{ marginTop: 10 }}>
 
-                                    <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>{'₹ ' + (parseInt(item.item_price) * item.item_unit).toString()}</Text>
+                                    <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>{'₹ ' + (parseInt(item.item_price) * item.item_unit)?.toString()}</Text>
                                 </View>
                             </View>)
                     })}

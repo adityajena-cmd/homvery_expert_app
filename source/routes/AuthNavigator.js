@@ -222,7 +222,7 @@ const AuthNavigator = () => {
 
   return (
     <>
-      <Stack.Navigator initialRouteName="Splash">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="Splash"
           component={SplashScreenComponent}
