@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, TextInput, ToastAndroid, Image, StatusBar, Dimensions, ScrollView } from 'react-native'
 import { Button } from 'react-native-paper'
+import Carousel from 'react-native-snap-carousel'
 import { Login } from '../config/apis/AuthApi'
 import { openBrowser } from '../config/Utils'
-// import Slider from '@react-native-community/slider';
+import Slider from '../components/Slider'
 
 const LoginScreen = ({navigation}) => {
     const [value, setvalue] = useState('9588754120')
@@ -96,16 +97,13 @@ const LoginScreen = ({navigation}) => {
 
                 </View>
             </ScrollView>
-            {/* <ScrollView horizontal scrollEventThrottle={160}>
-                <Slider
-                    style={{ width: Dimensions.get('screen').width, height: 40 }}
-                    minimumValue={0}
-                    maximumValue={1}
-                    step={1}
-                    minimumTrackTintColor="#FFFFFF"
-                    maximumTrackTintColor="#000000"
-                />
-            </ScrollView> */}
+
+
+
+            <Slider title="Slide to accept and go" onSwipe={() => { alert('text') }} />
+
+
+
         </View>
     );
 }
