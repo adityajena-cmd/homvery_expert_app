@@ -3,10 +3,12 @@ import { View, Text, TextInput, ToastAndroid, Image, StatusBar, Dimensions, Scro
 import { Button } from 'react-native-paper'
 import { Login } from '../config/apis/AuthApi'
 import { openBrowser } from '../config/Utils'
+// import Slider from '@react-native-community/slider';
 
 const LoginScreen = ({navigation}) => {
     const [value, setvalue] = useState('9588754120')
     const [loading, setLoading] = useState(false);
+    
     // const [links, setLinks] = React.useState({});
 
     // useEffect(() => {
@@ -74,10 +76,10 @@ const LoginScreen = ({navigation}) => {
                         </View>
                     </View>
                     <Button onPress={getOTP}
-                        disabled={loading }
-                        loading={ loading}
+                        disabled={loading}
+                        loading={loading}
                         color='#05194E'
-                        style={{ marginTop: 20, width: '100%', fontSize: 20,  borderRadius: 10, paddingVertical: .5 }}
+                        style={{ marginTop: 20, width: '100%', fontSize: 20, borderRadius: 10, paddingVertical: .5 }}
                         mode="contained"
                     ><Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Request OTP</Text></Button>
 
@@ -94,6 +96,16 @@ const LoginScreen = ({navigation}) => {
 
                 </View>
             </ScrollView>
+            {/* <ScrollView horizontal scrollEventThrottle={160}>
+                <Slider
+                    style={{ width: Dimensions.get('screen').width, height: 40 }}
+                    minimumValue={0}
+                    maximumValue={1}
+                    step={1}
+                    minimumTrackTintColor="#FFFFFF"
+                    maximumTrackTintColor="#000000"
+                />
+            </ScrollView> */}
         </View>
     );
 }
