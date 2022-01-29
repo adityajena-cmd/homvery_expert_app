@@ -20,6 +20,7 @@ const config = {
 };
 
 
+
 const data2 = [
     {
         name: 'AC not cooling'
@@ -78,6 +79,22 @@ export default function OngoingBooking({ navigation, route }) {
     const [loading, setLoading] = useState(false);
 
 
+    function TimeBtnGrp(props){
+    return <Button
+        onPress={() => {
+            props.setPreferedTime(props.index);
+            setFromDate(moment(scheduledDate).set(props.fromTime));
+            setToDate(moment(scheduledDate).set(props.toTime));
+        }}
+                mode='contained'
+                style={{display: 'flex', flexDirection: 'row', justifyContent: 'center' , backgroundColor: props.active ? '#00B0EB':'#ffffff', color: '#ffffff', borderRadius: 50, marginBottom: 10, borderColor: '#00B0EB', borderWidth: 1, width: Dimensions.get('screen').width/2-30,alignContent: 'center',alignItems: 'center', ...props.customButtonStyle }}>
+        {
+            props.iconName && <MaterialCommunityIcons style={{ color: props.active ? '#ffffff' : '#4E53C8', fontSize: 15,marginRight: 20 }} name={props.iconName}/>
+        }
+        <Text style={{ color: props.active ? '#ffffff' : '#4E53C8', fontSize: 12, }}>{props.name}</Text>
+            </Button>
+    };
+    
     useEffect(() => {
         requestLocationPermission()
         let watchID = Geolocation.watchPosition(
@@ -142,6 +159,7 @@ export default function OngoingBooking({ navigation, route }) {
 
 
     }, [])
+
     const technicianStarted = () => {
         setLoading(true)
 
@@ -221,6 +239,31 @@ export default function OngoingBooking({ navigation, route }) {
             })
 
     }
+
+    const data1 = [
+        {
+            name: '9.00 AM - 12.00 PM',
+            fromTime: {h: 9, m: 0},
+            toTime: {h: 12, m: 0},
+        },
+        {
+            name: '12.00 PM - 1.00 PM',
+            fromTime: {h: 12, m: 0},
+            toTime: {h: 13, m: 0},
+        },
+        {
+            name: '1.00 PM - 3.00 PM',
+            fromTime: {h: 13, m: 0},
+            toTime: {h: 15, m: 0},
+        },
+        {
+            name: '3.00 PM - 6.00 PM',
+            fromTime: {h: 15, m: 0},
+            toTime: {h: 18, m: 0},
+        },
+
+    ]
+
     return (
         <View style={{ backgroundColor: '#f8f8f8', flex: 1, paddingHorizontal: 20 }}>
 
@@ -337,6 +380,22 @@ export default function OngoingBooking({ navigation, route }) {
                             timestamp={scheduledDate }
                             setTimestamp={(ts) => { setScheduledDate(ts) }}
                         />
+                        <View style={{ backgroundColor: '#ffffff', elevation: 5, padding: 20, zIndex: 8 }}>
+                            <Text style={{ width: '100%', textAlign: 'center', color: '#000000', fontSize: 18 }}>Your Prefered Time?</Text>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 20 }}>
+
+                                {
+                                    data1.map((item, index) => {
+                                        return <TimeBtnGrp
+                                            key={index}
+                                            index={index}
+                                            setPreferedTime={(time)=>{setPreferedTime(time)}}
+                                            name={item.name}
+                                            active={preferedTime === index} />
+                                    })
+                                }
+                            </View>
+                        </View>
 
 
                         <View style={{ marginVertical: 20, backgroundColor: '#F5F5F550', height: 6 }} />
