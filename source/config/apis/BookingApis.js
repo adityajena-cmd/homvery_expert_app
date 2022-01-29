@@ -72,10 +72,10 @@ const ShareQuotation = ( token,body) => {
   return axios.post(urlConfig.baseURL + '/booking/createQuotation',body, header);
 };
 
-const GetInventory = ( token,serviceId,keyword) => {
+const GetInventory = ( token,serviceId,keyword,city) => {
   const header = getUserToken(token);
 
-  return axios.get(urlConfig.baseURL + `/inventories?service.id=${serviceId}&item_name_contains=${keyword}`, header);
+  return axios.get(urlConfig.baseURL + `/inventories?service.id=${serviceId}&city.name=${city}&item_name_contains=${keyword}&active=true`, header);
 };
 
 const GetBillingDetails = ( token,bookingId) => {

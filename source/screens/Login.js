@@ -7,19 +7,7 @@ import { openBrowser } from '../config/Utils'
 const LoginScreen = ({navigation}) => {
     const [value, setvalue] = useState('9588754120')
     const [loading, setLoading] = useState(false);
-    // const [links, setLinks] = React.useState({});
 
-    // useEffect(() => {
-    //     GetAllLinks(items[0][1])
-    //     .then(res=>{
-    //       if(res.status === 200){
-    //         setLinks(res.data[0])
-    //       }
-    //     }).catch(err=>{
-    //       console.log(error)
-    //     })
-    // }, []);
-    
 
     const getOTP =()=>{
 

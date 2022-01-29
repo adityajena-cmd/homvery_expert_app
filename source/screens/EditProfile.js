@@ -7,8 +7,23 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { UpdateTechnicianDetails, UpdateUser, UploadProfile } from '../config/apis/ProfileApis';
 import { requestCameraPermisiion } from '../config/LocaitonProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FormDropDown from '../components/FormDropDown';
+
+const relation =  [
+    {label: 'FATHER', value: 'FATHER'},
+    {label: 'MOTHER', value: 'MOTHER'},
+    {label: 'WIFE', value: 'WIFE'},
+    {label: 'BROTHER', value: 'BROTHER'},
+    {label: 'SISTER', value: 'SISTER'},
+];
 
 
+const bloodGroup =  [
+    {label: 'O+ve', value: 'O+ve'},
+    {label: 'B+ve', value: 'B+ve'},
+    {label: 'A+ve', value: 'A+ve'},
+    {label: 'AB-ve', value: 'AB-ve'},
+];
 const options = {
     mediaType: 'photo',
     storageOptions: {
@@ -81,7 +96,7 @@ export default function PersonalDetails({ navigation, route }) {
     const updateDeatils = (body) => {
         setLoading(true)
         AsyncStorage.multiGet(
-            ['API_TOKEN', 'DETAILS_ID', 'USER_ID'],
+            ['API_TOKEN', 'DETAILS_ID', 'USER_ID','ON_BOARD'],
             (err, items) => {
                 if (err) {
                 } else {
@@ -92,7 +107,12 @@ export default function PersonalDetails({ navigation, route }) {
                             setLoading(false)
                             if (res.status === 200) {
                                 ToastAndroid.show('Profile Updated!', ToastAndroid.SHORT);
-                                saveDetailsOnBoard()
+                                if(items[3][1] !== 'DETAILS' ){
+                                    saveDetailsOnBoard()
+                                }else{
+                                    navigation.goBack()
+                                }
+                                
                             }
 
 
@@ -207,6 +227,7 @@ export default function PersonalDetails({ navigation, route }) {
                     userForm.append('profilepic', res.data[0].id)
                     UpdateUser(userId, token, userForm)
                         .then(res => {
+                            console.log(res.status)
                             ToastAndroid.show('Image Uploaded!', ToastAndroid.SHORT);
 
                         }).catch(err => {
@@ -304,13 +325,13 @@ export default function PersonalDetails({ navigation, route }) {
                         </View>
                     </View>
                     <FormTextInput label="Expirence" placeholder="Expirence(Years)" onChangeText={(text) => { setexpirence(text) }} value={expirence} keyboardType="numeric" />
-                    <FormTextInput label="Blood Group" onChangeText={(text) => { setblood(text) }} placeholder="Blood Group" value={blood} />
+                    <FormDropDown label="Blood Group" items={bloodGroup} setValue={(text) => { setblood(text) }} placeholder="Blood Group" value={blood} />
                     <FormTextInput label="Aadhar Card No" placeholder="Aadhar Card No" onChangeText={(text) => { setaadhar(text) }} maxLength={12} value={aadhar} keyboardType={'numeric'} />
 
 
                     <FormTextInput label="Alternate Phone No" placeholder="Alternate phone number" onChangeText={(text) => { setalternateNumber(text) }} value={alternateNumber} maxLength={10} keyboardType={'phone-pad'} />
                     <FormTextInput label="Family Member Name" placeholder="Family Member Name" onChangeText={(text) => { setfamilyMemberName(text) }} value={familyMemberName} />
-                    <FormTextInput label="Relationship" placeholder="Relationship" value={familyRelation} onChangeText={(text) => { setfamilyRelation(text) }} />
+                    <FormDropDown label="Relationship" placeholder="Relationship" value={familyRelation} items={relation} setValue={(text) => { setfamilyRelation(text) }} />
                     <FormTextInput label="Family member contact" placeholder="Family member contact" maxLength={10} onChangeText={(text) => { setfamilyContact(text) }} keyboardType={'phone-pad'} value={familyContact} />
                     <Text style={{ fontSize: 15, fontWeight: '500', color: '#3e414a', marginBottom: 8 }}>Bank Details </Text>
 

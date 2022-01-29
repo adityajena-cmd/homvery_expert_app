@@ -2,10 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import { Button } from 'react-native-paper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GetTechnicianDetails, UpdateTechnicianDetails } from '../config/apis/ProfileApis';
+import { GetTechnicianDetails, UpdateTechnicianDetails, UpdateUser, UploadProfile } from '../config/apis/ProfileApis';
 import DocumentPicker from 'react-native-document-picker';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { requestCameraPermisiion } from '../config/LocaitonProvider';
+import { launchCamera } from 'react-native-image-picker';
 
+
+
+const options = {
+    mediaType: 'photo',
+    storageOptions: {
+        skipBackup: true,
+        path: 'images',
+    },
+
+}
 export default function ProfileUploader({ navigation }) {
 
     const [token, settoken] = useState('')
@@ -64,7 +76,60 @@ export default function ProfileUploader({ navigation }) {
 
         }
     }
+
+    const UploadImage = (doc) => {
+        let formData = new FormData()
+        formData.append('files', doc)
+        UploadProfile(token, formData)
+            .then(res => {
+                if (res.status === 200) {
+                    let userForm = new FormData()
+                    userForm.append('profilepic', res.data[0].id)
+                    UpdateUser(userId, token, userForm)
+                        .then(res => {
+                            ToastAndroid.show('Image Uploaded!', ToastAndroid.SHORT);
+
+                        }).catch(err => {
+                            console.log(err)
+                        })
+                }
+            }).catch(err => {
+                console.log(err)
+
+            })
+    }
+
+    
+    const addImage = () => {
+        console.log('YH')
+        launchCamera(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+                alert(response.customButton);
+            } else {
+                const source = { uri: response.uri };
+                setProfileSource(source)
+                console.log('response', JSON.stringify(response));
+                const doc = {
+                    name: response.fileName,
+                    type: response.type,
+                    uri:
+                        Platform.OS === 'android' ? response.uri : response.uri.replace('file://', ''),
+                };
+                setProfileDoc(doc)
+            }
+        });
+    }
+
     useEffect(() => {
+        requestCameraPermisiion()
+
         AsyncStorage.multiGet(
             ['API_TOKEN', 'USER_ID'],
             (err, items) => {
@@ -144,6 +209,7 @@ export default function ProfileUploader({ navigation }) {
 
     const submitDocuments = () => {
         setLoading(true)
+        UploadImage(profileDoc)
         let formData = new FormData();
         if (aadharDoc) {
             formData.append('files.aadharcard_photo', aadharDoc)
@@ -245,7 +311,7 @@ export default function ProfileUploader({ navigation }) {
                     </View> : <></>}
                 </TouchableOpacity>
                 <TouchableOpacity
-
+                    onPress={()=>{addImage()}}
                     style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#DCEBF7', borderBottomWidth: 1, paddingBottom: 10, marginBottom: 10 }}>
                     <Image
                         source={require('../assets/images/pu3.png')}

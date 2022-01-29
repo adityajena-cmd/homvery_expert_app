@@ -135,7 +135,8 @@ export default function CreateQuotation({ navigation, route }) {
         if (token === '') {
             getToken()
         } else {
-            GetInventory(token, booking.bookingid.serviceid?.id, searchText)
+            console.log("NEW", booking.bookingid?.address?.city)
+            GetInventory(token, booking.bookingid.serviceid?.id, searchText, booking.bookingid?.address?.city)
                 .then(res => {
                     console.log(res.data)
                     setInventoryLsit(res.data)
@@ -152,6 +153,11 @@ export default function CreateQuotation({ navigation, route }) {
 
     }, [searchText])
     const onModalSubmit = (qty, price, item) => {
+        if(price <1){
+            ToastAndroid.show('Price Canot be less than 1!', ToastAndroid.SHORT);
+            return;
+
+        }
         let data = {
             key: uuid().substring(0, 14),
             item_price: price,
@@ -183,7 +189,7 @@ export default function CreateQuotation({ navigation, route }) {
                 } else {
                     setToken(items[0][1])
                     setUserId(items[1][1])
-                    GetInventory(items[0][1], booking.bookingid.serviceid?.id, searchText)
+                    GetInventory(items[0][1], booking.bookingid.serviceid?.id, searchText, booking.bookingid?.address?.city)
                         .then(res => {
                             console.log(res.data)
                             setInventoryLsit(res.data)
@@ -261,7 +267,7 @@ export default function CreateQuotation({ navigation, route }) {
 
                                 <View style={{ marginTop: 10, flexDirection: 'row' }}>
                                     <Text style={{ color: '#000000', fontSize: 14 }}>{item.item_name}</Text>
-                                    <MaterialCommunityIcons name="delete" onPress={() => { removeQuotation(item.key) }} size={13} color={'#000'} style={{ marginLeft: 12 }} />
+                                    <MaterialCommunityIcons name="delete" onPress={() => { removeQuotation(item.key) }} size={17} color={'#000'} style={{ marginLeft: 12 }} />
                                 </View>
                                 <View style={{ marginTop: 10 }}>
 
@@ -286,7 +292,7 @@ export default function CreateQuotation({ navigation, route }) {
 
             <Button onPress={() => { navigation.navigate('ShareQuotation', { booking: route?.params.data, token: token, user: userId, data: quotationList, total: totalPrice }) }}
                 color='#05194E'
-
+                disabled={quotationList.length == 0}
                 style={{ borderRadius: 10, paddingVertical: .5, marginVertical: 30, alignSelf: 'center', width: '100%' }}
                 mode="contained"
             >
