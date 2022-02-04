@@ -9,23 +9,25 @@ import { requestCameraPermisiion } from '../config/LocaitonProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormDropDown from '../components/FormDropDown';
 
-const relation =  [
-    {label: 'FATHER', value: 'FATHER'},
-    {label: 'MOTHER', value: 'MOTHER'},
-    {label: 'WIFE', value: 'WIFE'},
-    {label: 'BROTHER', value: 'BROTHER'},
-    {label: 'SISTER', value: 'SISTER'},
+const relation = [
+    { label: 'FATHER', value: 'FATHER' },
+    { label: 'MOTHER', value: 'MOTHER' },
+    { label: 'WIFE', value: 'WIFE' },
+    { label: 'BROTHER', value: 'BROTHER' },
+    { label: 'SISTER', value: 'SISTER' },
 ];
 
 
-const bloodGroup =  [
-    {label: 'O+ve', value: 'O+ve'},
-    {label: 'B+ve', value: 'B+ve'},
-    {label: 'A+ve', value: 'A+ve'},
-    {label: 'AB-ve', value: 'AB-ve'},
+const bloodGroup = [
+    { label: 'O+ve', value: 'O+ve' },
+    { label: 'B+ve', value: 'B+ve' },
+    { label: 'A+ve', value: 'A+ve' },
+    { label: 'AB-ve', value: 'AB-ve' },
 ];
 const options = {
     mediaType: 'photo',
+    cameraType:'front',
+    quality: 0.99,
     storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -55,6 +57,7 @@ export default function PersonalDetails({ navigation, route }) {
     const width = Dimensions.get('screen').width
     const [token, setToken] = useState(route?.params?.token)
     const [userId, setUserId] = useState(route?.params?.user)
+    const [detailsID, setDetailsID] = useState('')
     const [profile, setProfile] = useState(route?.params?.data)
     const [profilesource, setProfileSource] = useState('')
 
@@ -93,10 +96,11 @@ export default function PersonalDetails({ navigation, route }) {
         }
     }
 
+
     const updateDeatils = (body) => {
         setLoading(true)
         AsyncStorage.multiGet(
-            ['API_TOKEN', 'DETAILS_ID', 'USER_ID','ON_BOARD'],
+            ['API_TOKEN', 'DETAILS_ID', 'USER_ID', 'ON_BOARD'],
             (err, items) => {
                 if (err) {
                 } else {
@@ -107,15 +111,13 @@ export default function PersonalDetails({ navigation, route }) {
                             setLoading(false)
                             if (res.status === 200) {
                                 ToastAndroid.show('Profile Updated!', ToastAndroid.SHORT);
-                                if(items[3][1] !== 'DETAILS' ){
+                                if (items[3][1] !== 'DETAILS') {
                                     saveDetailsOnBoard()
-                                }else{
+                                } else {
                                     navigation.goBack()
                                 }
-                                
+
                             }
-
-
                         }).catch(err => {
                             setLoading(false)
                             console.log(err.response.data)
@@ -130,67 +132,67 @@ export default function PersonalDetails({ navigation, route }) {
 
     const validateData = () => {
 
-        if (day.length == 0 || day == null || day == undefined || day === 'NA') {
+        if (day?.length == 0 || day == null || day == undefined || day === 'NA') {
             ToastAndroid.show('Enter a Valid Date!', ToastAndroid.SHORT);
             return;
         }
-        if (month.length == 0 || month == null || month == undefined || month === 'NA') {
+        if (month?.length == 0 || month == null || month == undefined || month === 'NA') {
             ToastAndroid.show('Enter a Valid Date!', ToastAndroid.SHORT);
             return;
         }
-        if (year.length == 0 || year == null || year == undefined || year === 'NA') {
+        if (year?.length == 0 || year == null || year == undefined || year === 'NA') {
             ToastAndroid.show('Enter a Valid Date!', ToastAndroid.SHORT);
             return;
         }
-        if (expirence.length == 0 || expirence == null || expirence == undefined || expirence === 'NA') {
+        if (expirence?.length == 0 || expirence == null || expirence == undefined || expirence === 'NA') {
             ToastAndroid.show('Enter a Valid Expirence!', ToastAndroid.SHORT);
             return;
         }
-        if (blood.length == 0 || blood == null || blood == undefined || blood === 'NA') {
+        if (blood?.length == 0 || blood == null || blood == undefined || blood === 'NA') {
             ToastAndroid.show('Enter your Blood Group!', ToastAndroid.SHORT);
             return;
         }
 
-        if (aadhar.length == 0 || aadhar == null || aadhar == undefined || aadhar === 'NA') {
+        if (aadhar?.length == 0 || aadhar == null || aadhar == undefined || aadhar === 'NA') {
             ToastAndroid.show('Enter Aadhar Info!', ToastAndroid.SHORT);
             return;
         }
 
-        if (alternateNumber.length == 0 || alternateNumber == null || alternateNumber == undefined || alternateNumber === 'NA') {
+        if (alternateNumber?.length == 0 || alternateNumber == null || alternateNumber == undefined || alternateNumber === 'NA') {
             ToastAndroid.show('Enter a Alternate Number!', ToastAndroid.SHORT);
             return;
         }
 
-        if (familyMemberName.length == 0 || familyMemberName == null || familyMemberName == undefined || familyMemberName === 'NA') {
+        if (familyMemberName?.length == 0 || familyMemberName == null || familyMemberName == undefined || familyMemberName === 'NA') {
             ToastAndroid.show('Enter a Family Member!', ToastAndroid.SHORT);
             return;
         }
 
-        if (familyContact.length == 0 || familyContact == null || familyContact == undefined || familyContact === 'NA') {
+        if (familyContact?.length == 0 || familyContact == null || familyContact == undefined || familyContact === 'NA') {
             ToastAndroid.show('Enter a Family Contact!', ToastAndroid.SHORT);
             return;
         }
 
-        if (familyRelation.length == 0 || familyRelation == null || familyRelation == undefined || familyRelation === 'NA') {
+        if (familyRelation?.length == 0 || familyRelation == null || familyRelation == undefined || familyRelation === 'NA') {
             ToastAndroid.show('Enter the members Relation!', ToastAndroid.SHORT);
             return;
         }
 
-        if (accountNo.length == 0 || accountNo == null || accountNo == undefined || accountNo === 'NA') {
+        if (accountNo?.length == 0 || accountNo == null || accountNo == undefined || accountNo === 'NA') {
             ToastAndroid.show('Enter your Account No!', ToastAndroid.SHORT);
             return;
         }
 
-        if (ifscCode.length == 0 || ifscCode == null || ifscCode == undefined || ifscCode === 'NA') {
+        if (ifscCode?.length == 0 || ifscCode == null || ifscCode == undefined || ifscCode === 'NA') {
             ToastAndroid.show('Enter your Ifsc Code!', ToastAndroid.SHORT);
             return;
         }
 
-        if (bankName.length == 0 || bankName == null || bankName == undefined || bankName === 'NA') {
+        if (bankName?.length == 0 || bankName == null || bankName == undefined || bankName === 'NA') {
             ToastAndroid.show('Enter your Ifsc Code!', ToastAndroid.SHORT);
             return;
         }
-        if (accountHolder.length == 0 || accountHolder == null || accountHolder == undefined || accountHolder === 'NA') {
+        if (accountHolder?.length == 0 || accountHolder == null || accountHolder == undefined || accountHolder === 'NA') {
             ToastAndroid.show('Enter Account Holder Name!', ToastAndroid.SHORT);
             return;
         }
@@ -223,6 +225,7 @@ export default function PersonalDetails({ navigation, route }) {
         UploadProfile(token, formData)
             .then(res => {
                 if (res.status === 200) {
+                    console.log("response",res.data[0].id)
                     let userForm = new FormData()
                     userForm.append('profilepic', res.data[0].id)
                     UpdateUser(userId, token, userForm)
@@ -231,11 +234,11 @@ export default function PersonalDetails({ navigation, route }) {
                             ToastAndroid.show('Image Uploaded!', ToastAndroid.SHORT);
 
                         }).catch(err => {
-                            console.log(err)
+                            console.log("Update", err.response.data)
                         })
                 }
             }).catch(err => {
-                console.log(err)
+                console.log("Upload", err.response.data)
 
             })
     }
@@ -276,15 +279,17 @@ export default function PersonalDetails({ navigation, route }) {
                 console.log('User tapped custom button: ', response.customButton);
                 alert(response.customButton);
             } else {
+                const { error, uri, originalRotation } = response
+                console.log("ROTATTEEE------",originalRotation)
                 const source = { uri: response.uri };
                 setProfileSource(source)
                 console.log('response', JSON.stringify(response));
                 const doc = {
-                    name: response.fileName,
-                    type: response.type,
-                    uri:
-                        Platform.OS === 'android' ? response.uri : response.uri.replace('file://', ''),
+                    name: response.assets[0].fileName,
+                    type: response.assets[0].type,
+                    uri: Platform.OS === 'android' ? response.assets[0].uri : response.assets[0].uri.replace('file://', ''),
                 };
+                setProfileSource({ uri: doc.uri })
                 askForUpload(doc)
             }
         });
@@ -296,9 +301,10 @@ export default function PersonalDetails({ navigation, route }) {
 
         <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ paddingHorizontal: 20, paddingTop: 10, }}>
-                    <Image source={profilesource ? profilesource : profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } : require('../assets/images/EP.png')} style={{ width: width * 0.5, height: width * 0.5, marginBottom: 10, alignSelf: 'center' }} />
-                    <TouchableOpacity onPress={() => {
+                <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
+                        <Image source={profilesource ? profilesource : profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } : require('../assets/images/EP.png')}
+                            style={{ width: 160, height: 160,borderRadius: 80, marginBottom: 10, alignSelf: 'center' }} />
+                    <TouchableOpacity style={{marginTop:20}} onPress={() => {
                         requestCameraPermisiion();
                         addImage()
                     }}>
@@ -324,7 +330,7 @@ export default function PersonalDetails({ navigation, route }) {
                             <FormTextInput label="Year" placeholder="YYYY" maxLength={4} onChangeText={(text) => { setyear(text) }} value={year} keyboardType="numeric" />
                         </View>
                     </View>
-                    <FormTextInput label="Expirence" placeholder="Expirence(Years)" onChangeText={(text) => { setexpirence(text) }} value={expirence} keyboardType="numeric" />
+                    <FormTextInput label="Expirence" placeholder="Expirence(Years)" onChangeText={(text) => { setexpirence(text) }} value={expirence.toString()} keyboardType="numeric" />
                     <FormDropDown label="Blood Group" items={bloodGroup} setValue={(text) => { setblood(text) }} placeholder="Blood Group" value={blood} />
                     <FormTextInput label="Aadhar Card No" placeholder="Aadhar Card No" onChangeText={(text) => { setaadhar(text) }} maxLength={12} value={aadhar} keyboardType={'numeric'} />
 

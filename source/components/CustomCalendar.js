@@ -40,24 +40,26 @@ const _animatedStyles = (index, animatedValue, carouselProps) => {
 
 export const getDayAndDate = (date) => {
   const result = [];
-  for (let i = 2; i >= 1; i--) {
+  for (let i = 4; i >1; i--) {
     const day = moment(date).subtract(i, 'days').format('ddd');
-    const date_mom = moment(date).subtract(i, 'days').format('DD');
+    const date_mom = moment(date).subtract(i, 'days');
     const res_obj = {
-      date: date_mom,
+      dateObj:date_mom,
+      date: date_mom.format('DD'),
       day: day,
-      active: moment(date).format('DD') === date_mom,
+      active: moment(date).format('DD') === date_mom.format('DD'),
       timeStamp: moment(date).subtract(i, 'days').utc()
     }
     result.push(res_obj);
   }
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 10; i++) {
     const day = moment(date).add(i, 'days').format('ddd');
-    const date_mom = moment(date).add(i, 'days').format('DD');
+    const date_mom = moment(date).add(i, 'days');
     const res_obj = {
-      date: date_mom,
+      dateObj:date_mom,
+      date: date_mom.format('DD'),
       day: day,
-      active: moment(date).format('DD') === date_mom,
+      active: moment(date).format('DD') === date_mom.format('DD'),
       timeStamp: moment(date).add(i, 'days').utc()
     }
     result.push(res_obj);
@@ -76,7 +78,13 @@ export default function CustomCalendar(props) {
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {
           datesArr.map((item, index) => {
-            return <TouchableOpacity onPress={() => { setTimestamp(item.timeStamp); setDatesArr(getDayAndDate(moment(item.timeStamp).format()))}} style={{ zIndex: 1, backgroundColor: item.active ? '#4E53C8' : '#ffffff', flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 15, width: width / 7 }}>
+            return <TouchableOpacity onPress={() => { 
+              if(moment(new Date()) < item.dateObj){
+                console.log(item.timeStamp)
+                setTimestamp(item.timeStamp); 
+                setDatesArr(getDayAndDate(moment(item.timeStamp).format()))
+              }
+              }} style={{ zIndex: 1, backgroundColor: item.active ? '#4E53C8' : '#ffffff', flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 15, width: width / 7 }}>
               <Text style={{ color: !item.active ? '#707070' : '#ffffff', fontSize: 14, fontWeight: '500' }}>{item.date}</Text>
               <Text style={{ color: !item.active ? '#707070' : '#ffffff', fontSize: 10, textTransform: 'uppercase', marginBottom: 10 }}>{item.day}</Text>
               <Image style={{ marginBottom: -4, zIndex: 2, width: 15, height: 15 }} source={require('../assets/images/triangle.png')} resizeMode='contain' />

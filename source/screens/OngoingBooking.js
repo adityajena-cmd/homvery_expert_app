@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, Dimensions, TouchableOpacity, TextInput, ToastAndroid } from 'react-native';
+import { View, Text, ScrollView, Image, Dimensions, TouchableOpacity, TextInput, ToastAndroid, BackHandler, RefreshControl } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -11,6 +11,7 @@ import { GetBookingStatus, ReachedTechinician, RescheduleBooking, StartTechinici
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { copyClipboard, getFullAddress, openMaps, openPhone } from '../config/Utils';
 import CustomCalendar from '../components/CustomCalendar';
+import Slider from '../components/Slider';
 
 
 const config = {
@@ -75,26 +76,27 @@ export default function OngoingBooking({ navigation, route }) {
     const [comments, setComments] = React.useState('');
     const [fromDate, setFromDate] = React.useState(null);
     const [toDate, setToDate] = React.useState(null);
-    const [scheduledDate, setScheduledDate] = React.useState('2012-07-09T19:22:09.1440844Z')
+    const [scheduledDate, setScheduledDate] = React.useState(new Date())
     const [loading, setLoading] = useState(false);
 
 
-    function TimeBtnGrp(props){
-    return <Button
-        onPress={() => {
-            props.setPreferedTime(props.index);
-            setFromDate(moment(scheduledDate).set(props.fromTime));
-            setToDate(moment(scheduledDate).set(props.toTime));
-        }}
-                mode='contained'
-                style={{display: 'flex', flexDirection: 'row', justifyContent: 'center' , backgroundColor: props.active ? '#00B0EB':'#ffffff', color: '#ffffff', borderRadius: 50, marginBottom: 10, borderColor: '#00B0EB', borderWidth: 1, width: Dimensions.get('screen').width/2-30,alignContent: 'center',alignItems: 'center', ...props.customButtonStyle }}>
-        {
-            props.iconName && <MaterialCommunityIcons style={{ color: props.active ? '#ffffff' : '#4E53C8', fontSize: 15,marginRight: 20 }} name={props.iconName}/>
-        }
-        <Text style={{ color: props.active ? '#ffffff' : '#4E53C8', fontSize: 12, }}>{props.name}</Text>
-            </Button>
+    function TimeBtnGrp(props) {
+        return <Button
+            onPress={() => {
+                props.setPreferedTime(props.index);
+                setFromDate(moment(scheduledDate).set(props.fromTime));
+                setToDate(moment(scheduledDate).set(props.toTime));
+            }}
+            mode='contained'
+            style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', backgroundColor: props.active ? '#4E53C8' : '#ffffff', color: '#ffffff', borderRadius: 50, marginBottom: 10, borderColor: '#4E53C8', borderWidth: 1, width: Dimensions.get('screen').width / 2 - 65, alignContent: 'center', alignItems: 'center', ...props.customButtonStyle }}>
+            {
+                props.iconName && <MaterialCommunityIcons style={{ color: props.active ? '#ffffff' : '#05194E', fontSize: 15, marginRight: 20 }} name={props.iconName} />
+            }
+            <Text style={{ color: props.active ? '#ffffff' : '#4E53C8', fontSize: 11, }}>{props.name}</Text>
+        </Button>
+        
     };
-    
+
     useEffect(() => {
         requestLocationPermission()
         let watchID = Geolocation.watchPosition(
@@ -114,6 +116,10 @@ export default function OngoingBooking({ navigation, route }) {
         };
     }, [])
 
+    const backAction = () => {
+        navigation.replace("Home")
+        return true;
+    }
 
     useEffect(() => {
         setLoading(true)
@@ -132,17 +138,21 @@ export default function OngoingBooking({ navigation, route }) {
                             console.log(res.data[0].bookingstatusid?.name)
                             if (res.data[0].bookingstatusid?.name === 'BOOKING_ASSIGNED' || res.data[0].bookingstatusid?.name === 'BOOKING_RESCHEDULED') {
                                 setAssinged(true)
-                            } else if (res.data[0].bookingstatusid?.name === 'QUOTATION_APPROVED') {
+                            } else if (res.data[0].bookingstatusid?.name === 'QUOTATION_APPROVED' ) {
                                 navigation.navigate('ShareQuotation', { booking: data, token: items[0][1], user: items[1][1] })
-                            } 
+                            }
                             else if (res.data[0].bookingstatusid?.name === 'QUOTATION_REJECTED') {
                                 navigation.navigate('CreateQuotation', { data: data })
-                            }else if (res.data[0].bookingstatusid?.name === 'TECHNICIAN_REACHED') {
+                            } else if (res.data[0].bookingstatusid?.name === 'TECHNICIAN_REACHED') {
                                 navigation.navigate('CreateQuotation', { data: data })
                             }
                             else if (res.data[0].bookingstatusid?.name === 'QUOTATION_CREATED') {
                                 navigation.navigate('ShareQuotation', { booking: route?.params?.data, token: items[0][1], user: items[1][1] })
                             }
+                            else if (res.data[0].bookingstatusid?.name === 'PAYMENT_COMPLETED') {
+                                navigation.navigate('ServiceComplete', { booking: route?.params?.data, token: items[0][1], user: items[1][1] })
+                            }
+
                             else {
                                 setAssinged(false)
                             }
@@ -156,6 +166,12 @@ export default function OngoingBooking({ navigation, route }) {
             })
 
 
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
 
 
     }, [])
@@ -206,6 +222,8 @@ export default function OngoingBooking({ navigation, route }) {
                 console.log("response----", res.data)
                 if (res.status === 200) {
                     setAssinged(false)
+                    setModal(false)
+                    navigation.goBack()
                 }
             }).catch(err => {
                 setLoading(true)
@@ -242,32 +260,47 @@ export default function OngoingBooking({ navigation, route }) {
 
     const data1 = [
         {
-            name: '9.00 AM - 12.00 PM',
-            fromTime: {h: 9, m: 0},
-            toTime: {h: 12, m: 0},
+            name: '9.00AM - 12.00PM',
+            fromTime: { h: 9, m: 0 },
+            toTime: { h: 12, m: 0 },
         },
         {
-            name: '12.00 PM - 1.00 PM',
-            fromTime: {h: 12, m: 0},
-            toTime: {h: 13, m: 0},
+            name: '12.00PM - 1.00PM',
+            fromTime: { h: 12, m: 0 },
+            toTime: { h: 13, m: 0 },
         },
         {
-            name: '1.00 PM - 3.00 PM',
-            fromTime: {h: 13, m: 0},
-            toTime: {h: 15, m: 0},
+            name: '1.00PM - 3.00PM',
+            fromTime: { h: 13, m: 0 },
+            toTime: { h: 15, m: 0 },
         },
         {
-            name: '3.00 PM - 6.00 PM',
-            fromTime: {h: 15, m: 0},
-            toTime: {h: 18, m: 0},
+            name: '3.00PM - 6.00PM',
+            fromTime: { h: 15, m: 0 },
+            toTime: { h: 18, m: 0 },
         },
 
     ]
+    const [preferedTime, setPreferedTime] = useState(0)
 
+
+    const updateTime =time =>{
+        setPreferedTime(time)
+        let current = moment(scheduledDate)
+        let fd = current.add(data1[time].fromTime?.h, 'hours');
+        let td = current.add(data1[time].toTime?.h, 'hours');
+        setFromDate(fd.utc())
+        setToDate(td.utc())
+    }
     return (
         <View style={{ backgroundColor: '#f8f8f8', flex: 1, paddingHorizontal: 20 }}>
 
-            <ScrollView showsVerticalScrollIndicator={false} >
+            <ScrollView showsVerticalScrollIndicator={false} 
+            refreshControl={
+                <RefreshControl
+                    refreshing={loading}
+                    onRefresh={()=>{}} />
+            }>
                 <View style={{ backgroundColor: '#ffffff', borderRadius: 10, elevation: 5, padding: 20, marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
                         <Text style={{ color: '#4E53C8', fontSize: 18 }}>Booking Details</Text>
@@ -283,8 +316,8 @@ export default function OngoingBooking({ navigation, route }) {
                         </Button>
 
 
-                        <TouchableOpacity onPress={() => {data?.bookingid?.address?.latitude ? openMaps(data?.bookingid?.address?.latitude, data?.bookingid?.address?.latitude , getFullAddress(data.bookingid?.address)): ToastAndroid.show('Locaiton Not Provide!', ToastAndroid.SHORT); }}
-                         style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 8.5, paddingHorizontal: 10, marginLeft: 10 }}>
+                        <TouchableOpacity onPress={() => { data?.bookingid?.address?.latitude ? openMaps(data?.bookingid?.address?.latitude, data?.bookingid?.address?.longitude, getFullAddress(data.bookingid?.address)) : ToastAndroid.show('Locaiton Not Provide!', ToastAndroid.SHORT); }}
+                            style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 8.5, paddingHorizontal: 10, marginLeft: 10 }}>
                             <Text style={{ color: '#05194E', fontSize: 10, fontWeight: '400' }}><MaterialCommunityIcons size={10} name='map-marker' color={'#05194E'} /> GET DIRECTION</Text>
                         </TouchableOpacity>
                     </View>
@@ -327,25 +360,15 @@ export default function OngoingBooking({ navigation, route }) {
 
 
             </ScrollView>
-            {isAssinged ? <Button onPress={() => { technicianStarted() }}
-                disabled={loading}
-                loading={loading}
-                color='#05194E'
-                style={{ borderRadius: 10, paddingVertical: .5, marginVertical: 10, alignSelf: 'center', width: '100%' }}
-                mode="contained"
-            >
-                <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Accept And GO</Text>
-            </Button> :
-                <Button onPress={() => { technicianReached() }}
-                    disabled={loading}
-                    loading={loading}
-                    color='#05194E'
-                    style={{ borderRadius: 10, paddingVertical: .5, marginVertical: 10, alignSelf: 'center', width: '100%' }}
-                    mode="contained"
-                >
-                    <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Reached Location</Text>
-                </Button>
-            }
+            {isAssinged &&
+                <View>
+                    <Slider disable={loading} title="Slide to accept and go" onSwipe={() => { technicianStarted() }} /></View>}
+
+            {!isAssinged && <View>
+                <Slider disable={loading} title="Reached Locaiton" onSwipe={() => { technicianReached() }} /></View>}
+
+            <View style={{ height: 30 }}></View>
+        
             <Modal
                 isVisible={modal}
                 hasBackdrop={true}
@@ -361,7 +384,7 @@ export default function OngoingBooking({ navigation, route }) {
                 }}
                 style={{ margin: 30, justifyContent: "center", }}>
                 <View style={{ backgroundColor: '#ffffff', padding: 10, borderRadius: 15, display: 'flex', }}>
-                    
+
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                         <Text style={{ color: '#635E5E', textAlign: 'center', fontSize: 16, fontWeight: '500', marginBottom: 10 }}></Text>
                         <TouchableOpacity onPress={() => { setModal(false) }}>
@@ -375,12 +398,12 @@ export default function OngoingBooking({ navigation, route }) {
                             <Text style={{ textAlign: 'center', color: '#000000', fontSize: 12, textDecorationLine: 'underline' }}><MaterialCommunityIcons name='calendar-range' size={12} /> More Details</Text>
                         </View>
 
-                        
+
                         <CustomCalendar
-                            timestamp={scheduledDate }
+                            
                             setTimestamp={(ts) => { setScheduledDate(ts) }}
                         />
-                        <View style={{ backgroundColor: '#ffffff', elevation: 5, padding: 20, zIndex: 8 }}>
+                        <View style={{ backgroundColor: '#ffffff', elevation: 5, padding: 15, zIndex: 8 }}>
                             <Text style={{ width: '100%', textAlign: 'center', color: '#000000', fontSize: 18 }}>Your Prefered Time?</Text>
                             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 20 }}>
 
@@ -389,7 +412,7 @@ export default function OngoingBooking({ navigation, route }) {
                                         return <TimeBtnGrp
                                             key={index}
                                             index={index}
-                                            setPreferedTime={(time)=>{setPreferedTime(time)}}
+                                            setPreferedTime={(time) => { updateTime(time)}}
                                             name={item.name}
                                             active={preferedTime === index} />
                                     })
@@ -398,7 +421,7 @@ export default function OngoingBooking({ navigation, route }) {
                         </View>
 
 
-                        <View style={{ marginVertical: 20, backgroundColor: '#F5F5F550', height: 6 }} />
+                        <View style={{ backgroundColor: '#F5F5F550', height: 6 }} />
 
                         <View style={{ padding: 10 }}>
                             <Text style={{ width: '100%', textAlign: 'left', fontWeight: '600', color: '#000000', fontSize: 15 }}>Write reason for reschedule? </Text>

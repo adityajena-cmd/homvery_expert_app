@@ -3,10 +3,11 @@ import { View, Text } from 'react-native';
 import SwipeButton from 'rn-swipe-button';
 
 export default function Slider(props) {
-        let forceResetLastButton = null;
+    let forceResetLastButton = null;
 
     return (
         <SwipeButton
+            disabled={props.disable}
             disableResetOnTap
             forceReset={reset => {
                 forceResetLastButton = reset
@@ -26,9 +27,9 @@ export default function Slider(props) {
             }}
             thumbIconImageSource={require('../assets/images/chright.png')}
             thumbIconBackgroundColor="#05194E"
-            thumbIconStyles={{borderWidth: 5 }}
+            thumbIconStyles={{ borderWidth: 5 }}
             thumbIconBorderColor='#eeeeee'
-                
+
             title={props.title}
             onSwipeSuccess={props.onSwipe}
         />

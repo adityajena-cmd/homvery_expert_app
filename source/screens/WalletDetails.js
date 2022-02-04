@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ImageBackground, TouchableOpacity, Dimensions, ScrollView, RefreshControl, ToastAndroid } from 'react-native';
+import { View, Text, Image, ImageBackground, TouchableOpacity, Dimensions, ScrollView, RefreshControl, ToastAndroid, TextInput } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modal from 'react-native-modal'
@@ -306,9 +306,8 @@ export default function WalletDetails({ navigation, route }) {
                 <MaterialCommunityIcons name="minus" size={20} color={'#ffffff'} />
               </TouchableOpacity>
 
-              <Text style={{ textAlign: 'center', minWidth: 30, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }}>
-                {value}
-              </Text>
+              <TextInput value={value.toString()} keyboardType='numeric' onChangeText={(te)=>setValue(te.replace(/0/g,'').replace('.','').replace('-',''))} style={{ textAlign: 'center', minWidth: 30, borderColor: '#05194E', borderWidth: 1, padding: 2, borderRadius: 5, marginHorizontal: 10, color: '#707070', fontSize: 15 }}/>
+                
 
               <TouchableOpacity onPress={() => { setValue(value + 1) }} style={{ backgroundColor: '#05194E', borderRadius: 100, height: 35, width: 35, display: 'flex', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
                 <MaterialCommunityIcons name="plus" size={20} color={'#ffffff'} />

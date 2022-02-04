@@ -26,10 +26,10 @@ export default function ProfileUploader({ navigation }) {
     const [profileData, setProfileData] = useState('')
     const [loading, setLoading] = useState(false);
 
-    const [aadharDoc, setAadharDoc] = useState(null)
-    const [signatureDoc, setSignatureDoc] = useState(null)
-    const [covidDoc, setCovidDoc] = useState(null)
-    const [profileDoc, setProfileDoc] = useState(null)
+    const [aadharDoc, setAadharDoc] = useState(profileData?.aadharcard_photo ? profileData?.aadharcard_photo : null)
+    const [signatureDoc, setSignatureDoc] = useState(profileData?.signature ? profileData?.signature : null)
+    const [covidDoc, setCovidDoc] = useState(profileData?.covidcertificate ? profileData?.covidcertificate : null)
+    const [profileDoc, setProfileDoc] = useState(profileData?.technician?.profilepic?profileData?.technician?.profilepic:null)
 
 
     const saveDetailsID = async (id) => {
@@ -114,13 +114,12 @@ export default function ProfileUploader({ navigation }) {
                 alert(response.customButton);
             } else {
                 const source = { uri: response.uri };
-                setProfileSource(source)
                 console.log('response', JSON.stringify(response));
                 const doc = {
-                    name: response.fileName,
-                    type: response.type,
+                    name: response.assets[0].fileName,
+                    type: response.assets[0].type,
                     uri:
-                        Platform.OS === 'android' ? response.uri : response.uri.replace('file://', ''),
+                        Platform.OS === 'android' ? response.assets[0].uri : response.assets[0].uri.replace('file://', ''),
                 };
                 setProfileDoc(doc)
             }
@@ -183,8 +182,7 @@ export default function ProfileUploader({ navigation }) {
                 const doc = {
                     name: res.name,
                     type: res.type,
-                    uri:
-                        Platform.OS === 'android' ? res.uri : res.uri.replace('file://', ''),
+                    uri:Platform.OS === 'android' ? res.uri : res.uri.replace('file://', ''),
                 };
                 switch (type) {
                     case 'aadhar':
@@ -320,7 +318,7 @@ export default function ProfileUploader({ navigation }) {
                     <Text style={{ color: '#05194E', fontWeight: '500', fontSize: 20, marginHorizontal: 15 }}>Profile Picture</Text>
                     {profileData?.technician?.profilepic == null ? <Image
                         resizeMode='contain'
-                        source={require('../assets/images/greenTickD.png')}
+                        source={profileDoc || profileData?.technician?.profilepic ? require('../assets/images/greenTick.png') : require('../assets/images/greenTickD.png')}
                     /> : <></>}
                     {profileData?.technician?.profilepic == null ? <View style={{ flex: 1, alignItems: 'flex-end' }}>
                         <Image
@@ -352,9 +350,10 @@ export default function ProfileUploader({ navigation }) {
 
                 <Button onPress={() => {
                     submitDocuments()
+                    // console.log(loading ||  (aadharDoc && covidcertificate && signatureDoc && profileDoc))
                 }}
                 mode="contained"
-                    disabled={loading || (aadharDoc && covidcertificate && signatureDoc && profileDoc)}
+                    disabled={loading || (aadharDoc && covidDoc && signatureDoc && profileDoc) === null}
                     loading={ loading}
                     color='#05194E'
                     style={{ marginTop: 30, width: '60%', fontSize: 20, borderRadius: 10, alignSelf: 'center' }}

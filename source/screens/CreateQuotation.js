@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Dimensions, ScrollView, TextInput, TouchableOpacity, ToastAndroid } from 'react-native';
+import { View, Text, Dimensions, ScrollView, TextInput, TouchableOpacity, ToastAndroid, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Button } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -11,6 +11,7 @@ import Geolocation from '@react-native-community/geolocation';
 import { GetInventory } from '../config/apis/BookingApis';
 import uuid from 'uuid-random';
 import { parse } from '@babel/core';
+import Slider from '../components/Slider';
 
 
 const AddInventoryModal = ({ item, modal, setModal, onModalSubmit }) => {
@@ -129,6 +130,20 @@ export default function CreateQuotation({ navigation, route }) {
         }
         setTotalPrice(total)
     }, [quotationList, itemChange]);
+    const backAction = () => {
+        navigation.replace('Home')
+        return true;
+    }
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
+
+    }, []);
+
 
 
     useEffect(() => {
@@ -153,7 +168,7 @@ export default function CreateQuotation({ navigation, route }) {
 
     }, [searchText])
     const onModalSubmit = (qty, price, item) => {
-        if(price <1){
+        if (price < 1) {
             ToastAndroid.show('Price Canot be less than 1!', ToastAndroid.SHORT);
             return;
 
@@ -169,10 +184,16 @@ export default function CreateQuotation({ navigation, route }) {
             commission: item.commission,
             id: item.id
         }
-        quotationList.push(data)
-        setQuotationList(quotationList)
-        setItemChange(itemChange + 1)
-        setModal(false)
+        if (!quotationList.find(item => item.id === data.id)) {
+            quotationList.push(data)
+            setQuotationList(quotationList)
+            setItemChange(itemChange + 1)
+            setModal(false)
+        } else {
+            ToastAndroid.show(data.item_name + ' Already Exsist!', ToastAndroid.SHORT);
+            return
+        }
+
     }
     const removeQuotation = (uid) => {
         let list = quotationList.filter(item => { return item.key !== uid })
@@ -290,14 +311,19 @@ export default function CreateQuotation({ navigation, route }) {
                 </View>
             </ScrollView>
 
-            <Button onPress={() => { navigation.navigate('ShareQuotation', { booking: route?.params.data, token: token, user: userId, data: quotationList, total: totalPrice }) }}
+            <View style={{ marginBottom: 30 }}>
+                <Slider disable={quotationList.length == 0} title="Review Quotation" onSwipe={() => { navigation.navigate('ShareQuotation', { booking: route?.params.data, token: token, user: userId, data: quotationList, total: totalPrice }) }} />
+            </View>
+
+
+            {/* <Button onPress={() => { }}
                 color='#05194E'
-                disabled={quotationList.length == 0}
+                disabled={}
                 style={{ borderRadius: 10, paddingVertical: .5, marginVertical: 30, alignSelf: 'center', width: '100%' }}
                 mode="contained"
             >
                 <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Review Quotation</Text>
-            </Button>
+            </Button> */}
         </View>
     );
 }

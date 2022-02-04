@@ -33,7 +33,7 @@ const UpdateTechnicianDetails = (userId, token, formData) => {
 const UploadProfile = (token, formData) => {
   const header = getUserToken(token, true);
 
-  return axios.post(urlConfig.baseURL + '/upload/', formData, header);
+  return axios.post(urlConfig.baseURL + '/upload', formData, header);
 };
 const UpdateUser = (userId, token, formData) => {
   const header = getUserToken(token, true);

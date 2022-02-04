@@ -34,7 +34,7 @@ export const Accord = ({ data }) => {
 
 
                         <TouchableOpacity onPress={() => {
-                            data?.bookingid?.address?.latitude ? openMaps(data?.bookingid?.address?.latitude, data?.bookingid?.address?.latitude, getFullAddress(data.bookingid?.address)) :
+                            data?.bookingid?.address?.latitude ? openMaps(data?.bookingid?.address?.latitude, data?.bookingid?.address?.longitude, getFullAddress(data.bookingid?.address)) :
                             ToastAndroid.show('Locaiton Not Provide!', ToastAndroid.SHORT);
                         }} style={{ backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 8.5, paddingHorizontal: 10, marginLeft: 10 }}>
                             <Text style={{ color: '#05194E', fontSize: 13, fontWeight: '400' }}><MaterialCommunityIcons size={13} name='map-marker' color={'#05194E'} /> GET DIRECTION</Text>

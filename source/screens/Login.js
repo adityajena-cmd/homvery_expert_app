@@ -84,12 +84,6 @@ const LoginScreen = ({navigation}) => {
                 </View>
             </ScrollView>
 
-
-
-            <Slider title="Slide to accept and go" onSwipe={() => { alert('text') }} />
-
-
-
         </View>
     );
 }

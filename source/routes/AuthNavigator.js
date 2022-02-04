@@ -220,6 +220,11 @@ const AuthNavigator = () => {
     routes: [{ name: 'Login' }],
   });
 
+  const homeAction = CommonActions.reset({
+    index: 0,
+    routes: [{ name: 'Home' }],
+  });
+
   return (
     <>
       <Stack.Navigator initialRouteName="Splash">
@@ -305,7 +310,7 @@ const AuthNavigator = () => {
           component={OngoingBooking}
           options={{
             title: 'Ongoing Booking',
-            headerLeft: () => (<TouchableOpacity onPress={() => { navigation.goBack() }}>
+            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack() }}>
               <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
             </TouchableOpacity>),
             headerTitleAlign: 'center',
@@ -327,7 +332,7 @@ const AuthNavigator = () => {
           component={CreateQuotation}
           options={{
             title: 'Quotation details',
-            headerLeft: () => (<TouchableOpacity onPress={() => { navigation.goBack() }}>
+            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack() }}>
               <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
             </TouchableOpacity>),
             headerTitleAlign: 'center',
@@ -338,7 +343,7 @@ const AuthNavigator = () => {
           component={ServiceComplete}
           options={{
             title: 'Service Completion',
-            headerLeft: () => (<TouchableOpacity onPress={() => { navigation.goBack() }}>
+            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack() }}>
               <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
             </TouchableOpacity>),
             headerTitleAlign: 'center',

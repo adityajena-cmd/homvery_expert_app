@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, RefreshControl, BackHandler } from 'react-native';
 import { Button } from 'react-native-paper';
 import { block } from 'react-native-reanimated';
+import Slider from '../components/Slider';
 import { CompleteBooking, GetBillingDetails, GetBookingStatus } from '../config/apis/BookingApis';
 import { Accord } from './Accordion';
 // import { Accord } from './ShareQuotation';
@@ -63,6 +64,19 @@ export default function ServiceComplete({ navigation, route }) {
             })
 
     }
+    const backAction = () => {
+        navigation.replace("Home")
+        return true;
+    }
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
+
+    }, []);
 
 
     useEffect(() => {
@@ -99,19 +113,19 @@ export default function ServiceComplete({ navigation, route }) {
             byCash: byCash
 
         }
-        console.log("BOOOOOKKK0000000000000000000000",body)
+        console.log("BOOOOOKKK0000000000000000000000", body)
         CompleteBooking(token, body)
-        .then(res => {
-            setRefresh(false)
-            if (res.status === 200) {
-                setPayment(true)
-                alert('Booking Complete')
-                navigation.replace('Home')
-            }
-        }).catch(err => {
-            setRefresh(false)
-            console.log(err.response.data)
-        })
+            .then(res => {
+                setRefresh(false)
+                if (res.status === 200) {
+                    setPayment(true)
+
+                    navigation.replace('Home')
+                }
+            }).catch(err => {
+                setRefresh(false)
+                console.log(err.response.data)
+            })
     }
 
 
@@ -157,9 +171,9 @@ export default function ServiceComplete({ navigation, route }) {
                     {/* </View> */}
                     <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
                     <Text style={{ color: '#000000', fontSize: 14, textAlign: 'center', fontWeight: '600' }}>Billing amount payed by customer</Text>
-                    <Text style={{ color: '#4E53C8', fontSize: 40, textAlign: 'center', fontWeight: '600' }}>₹1400</Text>
+                    <Text style={{ color: '#4E53C8', fontSize: 40, textAlign: 'center', fontWeight: '600' }}>{totalPrice ? '₹' + totalPrice.toString() : '₹0'}</Text>
                     <View style={{ height: 1, backgroundColor: '#EAE2E2', marginVertical: 10 }} />
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
+                    {!isPayment && <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center' }}>
                         <Image source={require('../assets/images/cashHand.png')} />
                         <View>
                             <Text style={{ color: '#05194E', fontSize: 20, marginBottom: 10 }}>Cash by hand!</Text>
@@ -168,7 +182,7 @@ export default function ServiceComplete({ navigation, route }) {
                         <View>
                             <Switch value={byCash} onChange={(val) => { setCash(val) }} />
                         </View>
-                    </View>
+                    </View>}
                 </View>
             </ScrollView>
             {!isPayment ? <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', marginBottom: 20 }}>
@@ -184,12 +198,10 @@ export default function ServiceComplete({ navigation, route }) {
                 <TouchableOpacity onPress={() => { navigation.navigate('Home') }} style={{ width: '50%', backgroundColor: '#ffffff', borderColor: '#05194E', borderWidth: 1, borderRadius: 10, paddingVertical: 7, paddingHorizontal: 10, marginLeft: 10 }}>
                     <Text style={{ color: '#05194E', fontSize: 12, fontWeight: '400', textAlign: 'center' }}>REVIST</Text>
                 </TouchableOpacity>
-            </View> : <Button
-                onPress={() => { serviceCompleted()}}
-                style={{ width: '75%', marginVertical: 20, fontSize: 20, backgroundColor: '#05194E', borderRadius: 10, paddingVertical: 0 }}
-                mode="contained">
-                <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: '400' }}>Service Completed</Text>
-            </Button>}
+            </View> : <View style={{ marginBottom: 30 }}>
+                <Slider disable={!isPayment} title="Service Completed" onSwipe={() => { serviceCompleted() }} />
+            </View>
+            }
         </View>
     );
 }

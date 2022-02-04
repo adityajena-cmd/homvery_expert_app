@@ -63,8 +63,8 @@ export default function ExpertProfile({ navigation }) {
   const getServiceAreas = (token, userId) => {
     GetServiceArea(token, userId)
       .then(res => {
-        console.log("-----------",res.data)
-        if (res.status === 200 && res.data.length >0) {
+        console.log("-----------", res.data)
+        if (res.status === 200 && res.data.length > 0) {
           let entries = []
           res.data.forEach(item => {
             let service = {
@@ -72,7 +72,7 @@ export default function ExpertProfile({ navigation }) {
               cities: getCities(item.service.service_locations),
               pincode: item.pincodes
             }
-           
+
             entries.push(service)
           })
           setServices(entries)
@@ -149,7 +149,7 @@ export default function ExpertProfile({ navigation }) {
               <Text style={{ color: '#0D0D0D', fontWeight: '700', fontSize: 15, textAlign: 'center', marginVertical: 10 }}>Approval Status Pending</Text>
               <Text style={{ color: '#A1A1A1', fontWeight: '500', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Please fill all the details in my profile section</Text>
 
-              <Button onPress={() => { navigation.navigate('EditProfile',{ data: profile, token: token, user: userId }) }}
+              <Button onPress={() => { navigation.navigate('EditProfile', { data: profile, token: token, user: userId }) }}
                 style={{ backgroundColor: '#05194E', borderRadius: 10, paddingVertical: .5, width: '50%', alignSelf: 'center', marginBottom: 50, marginTop: 10 }}
                 mode="contained">
                 <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Submit Details</Text>
@@ -194,7 +194,8 @@ export default function ExpertProfile({ navigation }) {
           status === 0 &&
           <>
             <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignContent: 'center', alignItems: 'center', }}>
-              <Image source={profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } : require('../assets/images/M2.png')} style={{ width: width / 4, height: width / 4 }} />
+              <Image source={profile?.modified_by?.profilepic?.url ? { uri: profile?.modified_by?.profilepic?.url } : require('../assets/images/M2.png')}
+                style={{ width: width / 4, height: width / 4, borderRadius: width / 8 }} />
               <View style={{ marginLeft: 30 }}>
                 <Text style={{ color: '#4E53C8', fontWeight: '600', fontSize: 20 }}>{profile.technician && profile?.technician?.firstname + ' ' + profile?.technician?.lastname}</Text>
                 <Text style={{ color: '#707070', fontWeight: '400', fontSize: 15 }}>{profile?.technician?.email}</Text>
@@ -210,8 +211,8 @@ export default function ExpertProfile({ navigation }) {
 
                 <View style={{ marginTop: 10 }}>
                   {services.length > 0 && services.map(item => {
-                    return <><Text style={{ color: '#000000',textDecorationLine:'underline', fontWeight: '600', marginTop: 30, fontSize: 18 }}>{`${item.service} (`  +item.cities+' )'}</Text>
-                      <Text style={{ color: '#000000', marginTop: 10, fontSize: 16 }}>{"Pincodes: "+item.pincode}</Text></>
+                    return <><Text style={{ color: '#000000', textDecorationLine: 'underline', fontWeight: '600', marginTop: 30, fontSize: 18 }}>{`${item.service} (` + item.cities + ' )'}</Text>
+                      <Text style={{ color: '#000000', marginTop: 10, fontSize: 16 }}>{"Pincodes: " + item.pincode}</Text></>
                   })}
                 </View>
 

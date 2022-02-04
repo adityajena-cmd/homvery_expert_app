@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions, RefreshControl, BackHandler } from 'react-native';
 import { Button } from 'react-native-paper';
 import Modal from 'react-native-modal';
 import { requestLocationPermission } from '../config/LocaitonProvider';
 import Geolocation from '@react-native-community/geolocation';
 import { CreateNewQuotation, GetBillingDetails, GetBookingStatus } from '../config/apis/BookingApis';
 
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { Accord } from './Accordion';
+import Slider from '../components/Slider';
 
 const config = {
     enableHighAccuracy: false,
@@ -21,8 +22,8 @@ export default function ShareQuotation({ navigation, route }) {
     const [isBilled, setBilled] = React.useState(false);
     const [token, setToken] = React.useState(route?.params?.token)
     const [userId, setUserId] = React.useState(route?.params?.user)
-    const [totalPrice, setTotalPrice] = React.useState(route?.params?.total?route?.params?.total:0)
-    const [quotationList, setQuotationList] = React.useState(route?.params?.data ? route?.params?.data:[])
+    const [totalPrice, setTotalPrice] = React.useState(route?.params?.total ? route?.params?.total : 0)
+    const [quotationList, setQuotationList] = React.useState(route?.params?.data ? route?.params?.data : [])
     const [loc, setLoc] = React.useState([]);
     const [itemChange, setItemChange] = React.useState(0)
     const [isRefresh, setRefresh] = React.useState(false);
@@ -35,7 +36,7 @@ export default function ShareQuotation({ navigation, route }) {
     let routeNav = useRoute()
 
     const onRefresh = () => {
-        setLoad(load+1)
+        setLoad(load + 1)
     }
     useEffect(() => {
         // console.log(uuid().substring(0,12))
@@ -63,18 +64,18 @@ export default function ShareQuotation({ navigation, route }) {
         if (quotationList !== undefined && quotationList.length > 0) {
 
             quotationList.forEach(item => {
-                if(isBilled){
+                if (isBilled) {
                     total = total + (item.cost);
-                }else{
+                } else {
                     total = total + (item.item_price * item.item_unit);
                 }
-                
+
             })
         } else {
             total = 0
         }
         setTotalPrice(total)
-    }, [ itemChange]);
+    }, [itemChange]);
 
 
     const GetBilling = () => {
@@ -92,13 +93,28 @@ export default function ShareQuotation({ navigation, route }) {
 
     }
 
+    const backAction = () => {
+        navigation.replace("Home")
+        return true;
+    }
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
+
+    }, []);
+
     useEffect(() => {
         setRefresh(true)
+        console.log("99999999999999999",booking.bookingid?.id)
         GetBookingStatus(booking.bookingid?.id, token)
             .then(res => {
                 setRefresh(false)
                 if (res.status === 200 && res.data.length > 0) {
-                    if (res.data[0].bookingstatusid?.name === 'QUOTATION_APPROVED' && routeNav.name === 'ShareQuotation') {
+                    if ((res.data[0].bookingstatusid?.name === 'QUOTATION_APPROVED' || res.data[0].bookingstatusid?.name === 'PAYMENT_COMPLETED') && routeNav.name === 'ShareQuotation') {
                         setApproved(true)
                     } else if (res.data[0].bookingstatusid?.name === 'QUOTATION_CREATED') {
                         setSubmitted(true)
@@ -151,11 +167,11 @@ export default function ShareQuotation({ navigation, route }) {
     return (
         <View style={{ flex: 1, backgroundColor: '#ffffff', paddingHorizontal: 20 }}>
             <ScrollView showsVerticalScrollIndicator={false} style={{ paddingVertical: 10 }}
-             refreshControl={
-                <RefreshControl
-                  refreshing={isRefresh}
-                  onRefresh={onRefresh} />
-              }
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefresh}
+                        onRefresh={onRefresh} />
+                }
             >
                 {isSubmitted && <Image style={{ width: width - 40, height: width / 3, marginVertical: 10, }} source={require('../assets/images/quot.png')} />
                 }
@@ -181,14 +197,18 @@ export default function ShareQuotation({ navigation, route }) {
                     <Text style={{ color: '#4E53C8', fontSize: 40, textAlign: 'center', fontWeight: '600' }}>{'₹' + totalPrice.toString()}</Text>
                 </View>
             </ScrollView>
-            {!isSubmitted && <Button onPress={() => { shareQuotation() }}
+            {!isSubmitted && <View style={{ marginBottom: 30 }}>
+                <Slider disable={loading} title="Share Quotation" onSwipe={() => { shareQuotation() }} />
+            </View>
+            }
+            {/* {!isSubmitted && <Button onPress={() => { shareQuotation() }}
                 loading={loading}
                 disabled={loading}
                 color='#05194E'
                 style={{ marginVertical: 10, width: '100%', borderRadius: 10, paddingVertical: .5 }}
                 mode="contained">
                 <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '400' }}>Service Completed Page</Text>
-            </Button>}
+            </Button>} */}
             <Modal
                 isVisible={isApproved}
                 hasBackdrop={true}
