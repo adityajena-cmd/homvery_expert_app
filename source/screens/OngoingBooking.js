@@ -117,7 +117,8 @@ export default function OngoingBooking({ navigation, route }) {
     }, [])
 
     const backAction = () => {
-        navigation.replace("Home")
+        navigation.goBack()
+        
         return true;
     }
 

@@ -75,7 +75,7 @@ const ShareQuotation = ( token,body) => {
 const GetInventory = ( token,serviceId,keyword,city) => {
   const header = getUserToken(token);
 
-  return axios.get(urlConfig.baseURL + `/inventories?service.id=${serviceId}&city.name=${city}&item_name_contains=${keyword}&active=true`, header);
+  return axios.get(urlConfig.baseURL + `/inventories?service.id=${serviceId}&city.name=${city}&item_name_contains=${keyword}&active=true&_sort=item_type`, header);
 };
 
 const GetBillingDetails = ( token,bookingId) => {

@@ -321,7 +321,7 @@ const AuthNavigator = () => {
           component={ShareQuotation}
           options={{
             title: 'Quotation details',
-            headerLeft: () => (<TouchableOpacity onPress={() => { navigation.goBack() }}>
+            headerLeft: () => (<TouchableOpacity onPress={() => { navigation.goBack(); navigation.goBack();navigation.goBack() }}>
               <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
             </TouchableOpacity>),
             headerTitleAlign: 'center',
@@ -332,7 +332,7 @@ const AuthNavigator = () => {
           component={CreateQuotation}
           options={{
             title: 'Quotation details',
-            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack() }}>
+            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack();navigation.goBack() }}>
               <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
             </TouchableOpacity>),
             headerTitleAlign: 'center',
@@ -343,7 +343,7 @@ const AuthNavigator = () => {
           component={ServiceComplete}
           options={{
             title: 'Service Completion',
-            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack() }}>
+            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack();navigation.goBack();navigation.goBack();navigation.goBack()}}>
               <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
             </TouchableOpacity>),
             headerTitleAlign: 'center',

@@ -92,11 +92,13 @@ export default function ShareQuotation({ navigation, route }) {
             })
 
     }
-
     const backAction = () => {
-        navigation.replace("Home")
+        navigation.goBack()
+        navigation.goBack()
+        navigation.goBack()
         return true;
     }
+    
     useEffect(() => {
         const backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
@@ -120,7 +122,7 @@ export default function ShareQuotation({ navigation, route }) {
                         setSubmitted(true)
                         GetBilling()
                     }
-                    else if (res.data[0].bookingstatusid?.name === 'QUOTATION_REJECTED') {
+                    else if (res.data[0].bookingstatusid?.name === 'QUOTATION_REJECTED' && route?.params?.newQuoitaion === false) {
                         setSubmitted(true)
                         navigation.goBack()
                         // navigation.navigate('ServiceComplete', { data: booking, token: token, user, user: userId })

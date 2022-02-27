@@ -65,7 +65,10 @@ export default function ServiceComplete({ navigation, route }) {
 
     }
     const backAction = () => {
-        navigation.replace("Home")
+        navigation.goBack()
+        navigation.goBack()
+        navigation.goBack()
+        navigation.goBack()
         return true;
     }
     useEffect(() => {
@@ -120,7 +123,7 @@ export default function ServiceComplete({ navigation, route }) {
                 if (res.status === 200) {
                     setPayment(true)
 
-                    navigation.replace('Home')
+                    backAction()
                 }
             }).catch(err => {
                 setRefresh(false)

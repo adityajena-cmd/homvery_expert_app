@@ -131,7 +131,8 @@ export default function CreateQuotation({ navigation, route }) {
         setTotalPrice(total)
     }, [quotationList, itemChange]);
     const backAction = () => {
-        navigation.replace('Home')
+        navigation.goBack()
+        navigation.goBack()
         return true;
     }
     useEffect(() => {
@@ -257,13 +258,13 @@ export default function CreateQuotation({ navigation, route }) {
                                 return (
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, paddingVertical: 10, }}>
                                         <View>
-                                            <Text style={{ color: '#4E53C8', fontSize: 15, }}>{item?.item_name}</Text>
-                                            <Text style={{ color: '#707070', fontSize: 15, }}>{item?.item_description}</Text>
+                                            <Text style={{ color: '#4E53C8', fontSize: 14, }}>{item?.item_name}</Text>
+                                            <Text style={{ color: '#707070', fontSize: 12, }}>{item?.item_description}</Text>
                                         </View>
                                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                            <Text style={{ color: '#4E53C8', fontSize: 25, fontWeight: '600' }}>{'₹' + item?.item_price}</Text>
+                                            <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{'₹' + item?.item_price}</Text>
                                             <TouchableOpacity onPress={() => { setCurrentItem(item); setModal(true) }} style={{ backgroundColor: '#4E53C8', padding: 4.5, borderRadius: 100, marginLeft: 10 }}>
-                                                <MaterialCommunityIcons name="pencil" size={17} color={'#ffffff'} />
+                                                <MaterialCommunityIcons name="pencil" size={15} color={'#ffffff'} />
                                             </TouchableOpacity>
                                         </View>
 
@@ -287,12 +288,12 @@ export default function CreateQuotation({ navigation, route }) {
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', }}>
 
                                 <View style={{ marginTop: 10, flexDirection: 'row' }}>
-                                    <Text style={{ color: '#000000', fontSize: 14 }}>{item.item_name}</Text>
-                                    <MaterialCommunityIcons name="delete" onPress={() => { removeQuotation(item.key) }} size={17} color={'#000'} style={{ marginLeft: 12 }} />
+                                    <Text style={{ color: '#000000', fontSize: 16 }}>{item.item_name}</Text>
+                                    <MaterialCommunityIcons name="delete" onPress={() => { removeQuotation(item.key) }} size={19} color={'#000'} style={{ marginLeft: 12 }} />
                                 </View>
                                 <View style={{ marginTop: 10 }}>
 
-                                    <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>{'₹ ' + (parseInt(item.item_price) * item.item_unit)?.toString()}</Text>
+                                    <Text style={{ color: '#000000', fontSize: 16, textAlign: 'right' }}>{'₹ ' + (parseInt(item.item_price) * item.item_unit)?.toString()}</Text>
                                 </View>
                             </View>)
                     })}
@@ -301,10 +302,10 @@ export default function CreateQuotation({ navigation, route }) {
 
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', }}>
                         <View style={{ marginVertical: 5 }}>
-                            <Text style={{ color: '#000000', fontSize: 14 }}>Parts Total Amount</Text>
+                            <Text style={{ color: '#000000', fontSize: 18 }}>Parts Total Amount</Text>
                         </View>
                         <View style={{ marginVertical: 5 }}>
-                            <Text style={{ color: '#000000', fontSize: 14, textAlign: 'right' }}>{'₹' + totalPrice}</Text>
+                            <Text style={{ color: '#000000', fontSize: 18,fontWeight:"600", textAlign: 'right' }}>{'₹' + totalPrice}</Text>
                         </View>
                     </View>
 
@@ -312,7 +313,7 @@ export default function CreateQuotation({ navigation, route }) {
             </ScrollView>
 
             <View style={{ marginBottom: 30 }}>
-                <Slider disable={quotationList.length == 0} title="Review Quotation" onSwipe={() => { navigation.navigate('ShareQuotation', { booking: route?.params.data, token: token, user: userId, data: quotationList, total: totalPrice }) }} />
+                <Slider disable={quotationList.length == 0} title="Review Quotation" onSwipe={() => { navigation.navigate('ShareQuotation', { booking: route?.params.data,newQuoitaion:true, token: token, user: userId, data: quotationList, total: totalPrice }) }} />
             </View>
 
 
