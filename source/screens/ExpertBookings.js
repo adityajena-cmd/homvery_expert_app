@@ -56,7 +56,7 @@ function Screen1({ navigation, data, onRefresh, isRefresh }) {
                                                     <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
                                                         <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
                                                         <View style={{ marginLeft: 10 }}>
-                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600',maxWidth:160 }}>{getFullAddress(item.bookingid?.address)}</Text>
                                                         </View>
                                                     </View>
                                                     <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
@@ -115,7 +115,7 @@ function Screen2({ navigation, data, onRefresh, isRefresh }) {
                                                     <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
                                                         <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
                                                         <View style={{ marginLeft: 10 }}>
-                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                            <Text style={{ fontSize: 12, color: '#9d9d9d', fontWeight: '600',maxWidth:160 }}>{getFullAddress(item.bookingid?.address)}</Text>
                                                         </View>
                                                     </View>
                                                     <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600', textAlign: 'right', marginTop: -20 }}>View Details</Text>
@@ -169,7 +169,7 @@ function Screen3({ navigation, data, onRefresh, isRefresh }) {
                                                         <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
                                                             <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
                                                             <View style={{ marginLeft: 10 }}>
-                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600',maxWidth:160 }}>{getFullAddress(item.bookingid?.address)}</Text>
                                                             </View>
                                                         </View>
                                                         <Text style={{ fontSize: 20, color: '#26A245', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10 }}>Completed</Text>
@@ -204,7 +204,7 @@ function Screen3({ navigation, data, onRefresh, isRefresh }) {
                                                         <View style={{ flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'flex-start' }}>
                                                             <MaterialCommunityIcons name="map-marker" color={'#000000'} size={30} />
                                                             <View style={{ marginLeft: 10 }}>
-                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600' }}>{getFullAddress(item.bookingid?.address)}</Text>
+                                                                <Text style={{ fontSize: 12, color: '#000000', fontWeight: '600',maxWidth:160 }}>{getFullAddress(item.bookingid?.address)}</Text>
                                                             </View>
                                                         </View>
                                                         <Text style={{ fontSize: 20, color: '#A22634', fontWeight: '600', textAlign: 'right', position: 'absolute', right: 0, top: 10 }}>Cancelled</Text>

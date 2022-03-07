@@ -254,21 +254,24 @@ export default function CreateQuotation({ navigation, route }) {
                 <View style={{ backgroundColor: '#ffffff', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 20, elevation: 5, margin: 5 }}>
                     {
                         inventoryList.length > 0 ?
-                            inventoryList.map(item => {
-                                return (
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, paddingVertical: 10, }}>
-                                        <View>
-                                            <Text style={{ color: '#4E53C8', fontSize: 14, }}>{item?.item_name}</Text>
-                                            <Text style={{ color: '#707070', fontSize: 12, }}>{item?.item_description}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-                                            <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{'₹' + item?.item_price}</Text>
-                                            <TouchableOpacity onPress={() => { setCurrentItem(item); setModal(true) }} style={{ backgroundColor: '#4E53C8', padding: 4.5, borderRadius: 100, marginLeft: 10 }}>
-                                                <MaterialCommunityIcons name="pencil" size={15} color={'#ffffff'} />
-                                            </TouchableOpacity>
-                                        </View>
-
-                                    </View>)
+                            inventoryList.map((item,index) => {
+                                if(index<5){
+                                    return (
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center', borderBottomColor: '#EAE2E2', borderBottomWidth: 1, paddingVertical: 10, }}>
+                                            <View>
+                                                <Text style={{ color: '#4E53C8', fontSize: 14, }}>{item?.item_name}</Text>
+                                                <Text style={{ color: '#707070', fontSize: 12, }}>{item?.item_description}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+                                                <Text style={{ color: '#4E53C8', fontSize: 18, fontWeight: '600' }}>{'₹' + item?.item_price}</Text>
+                                                <TouchableOpacity onPress={() => { setCurrentItem(item); setModal(true) }} style={{ backgroundColor: '#4E53C8', padding: 4.5, borderRadius: 100, marginLeft: 10 }}>
+                                                    <MaterialCommunityIcons name="pencil" size={15} color={'#ffffff'} />
+                                                </TouchableOpacity>
+                                            </View>
+    
+                                        </View>)
+                                }
+                               
                             }) : <></>}
 
 

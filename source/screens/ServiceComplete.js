@@ -163,7 +163,7 @@ export default function ServiceComplete({ navigation, route }) {
                                 </View>
                                 {
                                     index == 0 && isPayment ?
-                                        <Image style={{ marginLeft: width / 3, position: 'absolute', width: width / 4, height: width / 4 }} source={require('../assets/images/paid.png')} />
+                                        <Image style={{ marginLeft: width / 3, position: 'absolute',top:0, width: width / 4, height: width / 4 }} source={require('../assets/images/paid.png')} />
                                         : <></>
 
                                 }

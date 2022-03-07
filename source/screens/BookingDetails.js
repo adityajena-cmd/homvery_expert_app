@@ -27,7 +27,7 @@ export const Invoice = ({ paid, data, total, hv, penalty }) => {
                         </View>
                         {
                             index == 0 && paid ?
-                                <Image style={{ marginLeft: width / 3, position: 'absolute', width: width / 4, height: width / 4, marginTop: 30 }} source={require('../assets/images/paid.png')} />
+                                <Image style={{ marginLeft: width / 3, position: 'absolute', width: width / 4,top:0, height: width / 4}} source={require('../assets/images/paid.png')} />
                                 : <></>
 
                         }

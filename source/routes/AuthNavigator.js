@@ -305,15 +305,16 @@ const AuthNavigator = () => {
             headerTitleAlign: 'center',
           }}
         />
+          {/* headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack() }}>
+               <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
+            </TouchableOpacity>), */}
         <Stack.Screen
           name="OngoingBooking"
           component={OngoingBooking}
           options={{
             title: 'Ongoing Booking',
-            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack() }}>
-              <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
-            </TouchableOpacity>),
             headerTitleAlign: 'center',
+            headerLeft: ()=> (<></>)
           }}
         />
         <Stack.Screen
@@ -321,10 +322,8 @@ const AuthNavigator = () => {
           component={ShareQuotation}
           options={{
             title: 'Quotation details',
-            headerLeft: () => (<TouchableOpacity onPress={() => { navigation.goBack(); navigation.goBack();navigation.goBack() }}>
-              <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
-            </TouchableOpacity>),
-            headerTitleAlign: 'center',
+           headerTitleAlign: 'center',
+           headerLeft: ()=> (<></>)
           }}
         />
         <Stack.Screen
@@ -332,10 +331,8 @@ const AuthNavigator = () => {
           component={CreateQuotation}
           options={{
             title: 'Quotation details',
-            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack();navigation.goBack() }}>
-              <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
-            </TouchableOpacity>),
             headerTitleAlign: 'center',
+            headerLeft: ()=> (<></>)
           }}
         />
         <Stack.Screen
@@ -343,10 +340,8 @@ const AuthNavigator = () => {
           component={ServiceComplete}
           options={{
             title: 'Service Completion',
-            headerLeft: () => (<TouchableOpacity onPress={() => {  navigation.goBack();navigation.goBack();navigation.goBack();navigation.goBack()}}>
-              <MaterialCommunityIcons name={"arrow-left"} color={'#000000'} style={{ marginHorizontal: 10 }} size={30} />
-            </TouchableOpacity>),
-            headerTitleAlign: 'center',
+           headerTitleAlign: 'center',
+           headerLeft: ()=> (<></>)
           }}
         />
         <Stack.Screen

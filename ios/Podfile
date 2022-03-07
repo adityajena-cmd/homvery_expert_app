@@ -12,6 +12,8 @@ target 'homvery_expert_app' do
     :hermes_enabled => false
   )
 
+  pod 'RNFloatingBubble', :path => '../node_modules/react-native-floating-bubble'
+
   target 'homvery_expert_appTests' do
     inherit! :complete
     # Pods for testing
